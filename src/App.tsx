@@ -11,6 +11,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ChangePassword from "./pages/auth/ChangePassword";
+import PhoneLogin from "./pages/auth/PhoneLogin";
 import Dashboard from "./pages/dashboard/Dashboard";
 import SellerDashboard from "./pages/dashboard/SellerDashboard";
 import BuyerDashboard from "./pages/dashboard/BuyerDashboard";
@@ -18,6 +19,21 @@ import IndustryDashboard from "./pages/dashboard/IndustryDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
+
+// Seller Pages
+import SellerProducts from "./pages/seller/Products";
+import ProductForm from "./pages/seller/ProductForm";
+import SellerPrices from "./pages/seller/Prices";
+
+// Price Pages
+import PriceList from "./pages/prices/PriceList";
+import MarketComparison from "./pages/prices/MarketComparison";
+
+// Messages
+import Messages from "./pages/messages/Messages";
+
+// Admin
+import AdminPanel from "./pages/admin/AdminPanel";
 
 const queryClient = new QueryClient();
 
@@ -32,9 +48,12 @@ const App = () => (
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/phone-login" element={<PhoneLogin />} />
             <Route path="/register" element={<Register />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/prices" element={<PriceList />} />
+            <Route path="/markets" element={<MarketComparison />} />
 
             {/* Protected Routes */}
             <Route
@@ -50,6 +69,38 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["seller", "admin"]}>
                   <SellerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/seller/products"
+              element={
+                <ProtectedRoute allowedRoles={["seller", "admin"]}>
+                  <SellerProducts />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/seller/products/new"
+              element={
+                <ProtectedRoute allowedRoles={["seller", "admin"]}>
+                  <ProductForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/seller/products/:id/edit"
+              element={
+                <ProtectedRoute allowedRoles={["seller", "admin"]}>
+                  <ProductForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/seller/prices"
+              element={
+                <ProtectedRoute allowedRoles={["seller", "admin"]}>
+                  <SellerPrices />
                 </ProtectedRoute>
               }
             />
@@ -74,6 +125,22 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["admin"]}>
                   <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminPanel />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <ProtectedRoute>
+                  <Messages />
                 </ProtectedRoute>
               }
             />
