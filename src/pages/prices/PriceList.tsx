@@ -89,12 +89,12 @@ export default function PriceList() {
                   className="pl-10"
                 />
               </div>
-              <Select value={locationFilter} onValueChange={setLocationFilter}>
+              <Select value={locationFilter || "all"} onValueChange={(v) => setLocationFilter(v === "all" ? "" : v)}>
                 <SelectTrigger className="w-full md:w-[200px]">
                   <SelectValue placeholder="All Locations" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  <SelectItem value="">All Locations</SelectItem>
+                  <SelectItem value="all">All Locations</SelectItem>
                   {locations?.map((loc) => (
                     <SelectItem key={loc.id} value={loc.id}>
                       {loc.name}
