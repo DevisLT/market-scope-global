@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import {
   TrendingUp,
   MessageSquare,
   Plus,
-  BarChart3,
   Eye,
   Clock,
 } from "lucide-react";
@@ -139,13 +137,13 @@ export default function SellerDashboard() {
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link to="/dashboard/seller/analytics">
-                    <BarChart3 className="mr-2 h-4 w-4" />
-                    View Analytics
+                  <Link to="/dashboard/seller/products">
+                    <Package className="mr-2 h-4 w-4" />
+                    View Products
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link to="/dashboard/messages">
+                  <Link to="/messages">
                     <MessageSquare className="mr-2 h-4 w-4" />
                     Messages
                   </Link>
