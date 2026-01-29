@@ -16,6 +16,7 @@ import SellerDashboard from "./pages/dashboard/SellerDashboard";
 import BuyerDashboard from "./pages/dashboard/BuyerDashboard";
 import IndustryDashboard from "./pages/dashboard/IndustryDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/pricing" element={<Pricing />} />
 
             {/* Protected Routes */}
             <Route
