@@ -72,7 +72,7 @@ export default function Pricing() {
   const handleSubscribe = async (plan: typeof plans[0]) => {
     if (!plan.priceId) {
       if (plan.id === "enterprise") {
-        window.location.href = "mailto:enterprise@pricescope.global";
+        window.location.href = "mailto:enterprise@priceflow.com";
         return;
       }
       // Free plan - just redirect to register/dashboard

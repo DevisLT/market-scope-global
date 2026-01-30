@@ -315,7 +315,7 @@ export default function Landing() {
             Ready to Make Smarter Decisions?
           </h2>
           <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-            Join thousands of traders, buyers, and industries using PriceScope Global
+            Join thousands of traders, buyers, and industries using Priceflow
             to stay ahead of market trends.
           </p>
           <Button size="lg" variant="secondary" asChild className="text-lg px-8">
