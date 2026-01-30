@@ -12,6 +12,8 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ChangePassword from "./pages/auth/ChangePassword";
 import PhoneLogin from "./pages/auth/PhoneLogin";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import Dashboard from "./pages/dashboard/Dashboard";
 import SellerDashboard from "./pages/dashboard/SellerDashboard";
 import BuyerDashboard from "./pages/dashboard/BuyerDashboard";
@@ -61,6 +63,8 @@ const App = () => (
             <Route path="/phone-login" element={<PhoneLogin />} />
             <Route path="/register" element={<Register />} />
             <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/prices" element={<PriceList />} />
             <Route path="/markets" element={<MarketComparison />} />
