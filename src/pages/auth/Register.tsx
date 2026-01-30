@@ -151,7 +151,7 @@ export default function Register() {
             <TrendingUp className="w-7 h-7" />
           </div>
           <span className="font-bold text-2xl">
-            PriceScope<span className="text-primary">Global</span>
+            Price<span className="text-primary">flow</span>
           </span>
         </Link>
 

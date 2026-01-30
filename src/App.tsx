@@ -20,6 +20,16 @@ import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
+// Info Pages
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Blog from "./pages/Blog";
+import Careers from "./pages/Careers";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Cookies from "./pages/Cookies";
+import Trends from "./pages/Trends";
+
 // Seller Pages
 import SellerProducts from "./pages/seller/Products";
 import ProductForm from "./pages/seller/ProductForm";
@@ -54,6 +64,14 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/prices" element={<PriceList />} />
             <Route path="/markets" element={<MarketComparison />} />
+            <Route path="/trends" element={<Trends />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/cookies" element={<Cookies />} />
 
             {/* Protected Routes */}
             <Route

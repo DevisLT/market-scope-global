@@ -61,7 +61,7 @@ export function Header() {
               <TrendingUp className="w-6 h-6" />
             </div>
             <span className="font-bold text-xl hidden sm:block">
-              PriceScope<span className="text-primary">Global</span>
+              Price<span className="text-primary">flow</span>
             </span>
           </Link>
 

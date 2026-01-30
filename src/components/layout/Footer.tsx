@@ -13,7 +13,7 @@ export function Footer() {
                 <TrendingUp className="w-6 h-6" />
               </div>
               <span className="font-bold text-xl">
-                PriceScope<span className="text-primary">Global</span>
+                Price<span className="text-primary">flow</span>
               </span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
@@ -66,7 +66,7 @@ export function Footer() {
         </div>
 
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} PriceScope Global. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Priceflow. All rights reserved.</p>
         </div>
       </div>
     </footer>
