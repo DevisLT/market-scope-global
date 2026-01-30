@@ -46,6 +46,7 @@ import Messages from "./pages/messages/Messages";
 
 // Admin
 import AdminPanel from "./pages/admin/AdminPanel";
+import Settings from "./pages/settings/Settings";
 
 const queryClient = new QueryClient();
 
@@ -155,6 +156,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["admin"]}>
                   <AdminPanel />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
                 </ProtectedRoute>
               }
             />
