@@ -75,6 +75,35 @@
     --chart-5: 262 83% 58%;
   }
 
+  /* Admin Theme - Dark, Professional, Command-Center Style */
+  .admin-theme {
+    --admin-bg: 222 47% 6%;
+    --admin-bg-elevated: 222 47% 9%;
+    --admin-bg-muted: 222 30% 12%;
+    --admin-foreground: 220 14% 96%;
+    --admin-foreground-muted: 220 9% 60%;
+    
+    /* Admin Accent - Electric Blue */
+    --admin-accent: 200 100% 50%;
+    --admin-accent-foreground: 222 47% 6%;
+    --admin-accent-glow: 200 100% 60%;
+    
+    /* Admin Success/Warning/Error with higher saturation */
+    --admin-success: 160 84% 39%;
+    --admin-warning: 43 96% 56%;
+    --admin-danger: 0 91% 60%;
+    
+    /* Sidebar specific for admin */
+    --admin-sidebar-bg: 222 47% 4%;
+    --admin-sidebar-hover: 222 47% 12%;
+    --admin-sidebar-active: 200 100% 50%;
+    --admin-sidebar-border: 222 30% 15%;
+    
+    /* Card and surface gradients */
+    --admin-card-gradient: linear-gradient(135deg, hsl(222 47% 11%) 0%, hsl(222 47% 8%) 100%);
+    --admin-border: 222 30% 18%;
+  }
+
   .dark {
     --background: 222 47% 6%;
     --foreground: 220 14% 96%;
