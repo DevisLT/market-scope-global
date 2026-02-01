@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AdminLayout } from "@/components/admin";
+import { AdminLayout, LiveActivityFeed } from "@/components/admin";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminStats } from "@/hooks/useAdmin";
 import {
@@ -10,15 +10,11 @@ import {
   Package,
   DollarSign,
   TrendingUp,
-  Settings,
   Shield,
   BarChart3,
-  AlertTriangle,
-  CheckCircle,
   Clock,
   Loader2,
   ArrowUpRight,
-  Activity,
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -60,13 +56,6 @@ export default function AdminDashboard() {
     { id: 1, type: "Product", name: "Organic Wheat Flour", user: "SL234", time: "2 hours ago" },
     { id: 2, type: "Price", name: "Tomatoes - Lagos Market", user: "SL156", time: "3 hours ago" },
     { id: 3, type: "User", name: "New Industry Account", user: "TL45", time: "5 hours ago" },
-  ];
-
-  const recentActivity = [
-    { text: "New user registered: BL1024", type: "info", time: "10 min ago" },
-    { text: "Price anomaly detected: Petrol in Kenya", type: "warning", time: "25 min ago" },
-    { text: "Product approved: Rice Premium", type: "success", time: "1 hour ago" },
-    { text: "Subscription upgraded: TL32", type: "info", time: "2 hours ago" },
   ];
 
   return (
@@ -199,34 +188,8 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          {/* Recent Activity */}
-          <Card className="bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[hsl(var(--admin-foreground))]">
-                <Activity className="h-4 w-4 text-[hsl(var(--admin-accent))]" />
-                Recent Activity
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentActivity.map((activity, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    {activity.type === "warning" ? (
-                      <AlertTriangle className="h-4 w-4 mt-0.5 text-[hsl(var(--admin-warning))]" />
-                    ) : activity.type === "success" ? (
-                      <CheckCircle className="h-4 w-4 mt-0.5 text-[hsl(var(--admin-success))]" />
-                    ) : (
-                      <Clock className="h-4 w-4 mt-0.5 text-[hsl(var(--admin-foreground-muted))]" />
-                    )}
-                    <div>
-                      <p className="text-sm text-[hsl(var(--admin-foreground))]">{activity.text}</p>
-                      <p className="text-xs text-[hsl(var(--admin-foreground-muted))]">{activity.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          {/* Live Activity Feed */}
+          <LiveActivityFeed />
         </div>
       </div>
     </AdminLayout>
