@@ -11,7 +11,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ChangePassword from "./pages/auth/ChangePassword";
-import PhoneLogin from "./pages/auth/PhoneLogin";
+
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import Dashboard from "./pages/dashboard/Dashboard";
@@ -61,7 +61,7 @@ const App = () => (
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/phone-login" element={<PhoneLogin />} />
+            
             <Route path="/register" element={<Register />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
