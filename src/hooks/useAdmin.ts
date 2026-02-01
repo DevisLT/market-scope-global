@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { AppRole } from "@/lib/auth";
+import { useCreateAuditLog } from "./useAuditLog";
 
 export interface AdminUser {
   id: string;
@@ -95,21 +96,30 @@ export function useAdminStats() {
 
 export function useApproveProduct() {
   const queryClient = useQueryClient();
+  const createAuditLog = useCreateAuditLog();
 
   return useMutation({
-    mutationFn: async (productId: string) => {
+    mutationFn: async ({ productId, productName }: { productId: string; productName: string }) => {
       const { error } = await supabase
         .from("products")
         .update({ is_approved: true })
         .eq("id", productId);
 
       if (error) throw error;
+      return { productId, productName };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
       queryClient.invalidateQueries({ queryKey: ["admin-stats"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Product approved");
+      
+      createAuditLog.mutate({
+        action_type: "product_approved",
+        target_type: "product",
+        target_id: data.productId,
+        target_name: data.productName,
+      });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to approve product");
@@ -119,21 +129,30 @@ export function useApproveProduct() {
 
 export function useRejectProduct() {
   const queryClient = useQueryClient();
+  const createAuditLog = useCreateAuditLog();
 
   return useMutation({
-    mutationFn: async (productId: string) => {
+    mutationFn: async ({ productId, productName }: { productId: string; productName: string }) => {
       const { error } = await supabase
         .from("products")
         .update({ is_approved: false, is_active: false })
         .eq("id", productId);
 
       if (error) throw error;
+      return { productId, productName };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
       queryClient.invalidateQueries({ queryKey: ["admin-stats"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Product rejected");
+      
+      createAuditLog.mutate({
+        action_type: "product_rejected",
+        target_type: "product",
+        target_id: data.productId,
+        target_name: data.productName,
+      });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to reject product");
@@ -143,19 +162,28 @@ export function useRejectProduct() {
 
 export function useSuspendUser() {
   const queryClient = useQueryClient();
+  const createAuditLog = useCreateAuditLog();
 
   return useMutation({
-    mutationFn: async ({ userId, suspend }: { userId: string; suspend: boolean }) => {
+    mutationFn: async ({ userId, username, suspend }: { userId: string; username: string; suspend: boolean }) => {
       const { error } = await supabase
         .from("profiles")
         .update({ is_suspended: suspend })
         .eq("id", userId);
 
       if (error) throw error;
+      return { userId, username, suspend };
     },
-    onSuccess: (_, { suspend }) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast.success(suspend ? "User suspended" : "User unsuspended");
+      toast.success(data.suspend ? "User suspended" : "User unsuspended");
+      
+      createAuditLog.mutate({
+        action_type: data.suspend ? "user_suspended" : "user_unsuspended",
+        target_type: "user",
+        target_id: data.userId,
+        target_name: data.username,
+      });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update user status");
@@ -165,19 +193,28 @@ export function useSuspendUser() {
 
 export function useVerifyUser() {
   const queryClient = useQueryClient();
+  const createAuditLog = useCreateAuditLog();
 
   return useMutation({
-    mutationFn: async ({ userId, verify }: { userId: string; verify: boolean }) => {
+    mutationFn: async ({ userId, username, verify }: { userId: string; username: string; verify: boolean }) => {
       const { error } = await supabase
         .from("profiles")
         .update({ is_verified: verify })
         .eq("id", userId);
 
       if (error) throw error;
+      return { userId, username, verify };
     },
-    onSuccess: (_, { verify }) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast.success(verify ? "User verified" : "User unverified");
+      toast.success(data.verify ? "User verified" : "User unverified");
+      
+      createAuditLog.mutate({
+        action_type: data.verify ? "user_verified" : "user_unverified",
+        target_type: "user",
+        target_id: data.userId,
+        target_name: data.username,
+      });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update user verification");
