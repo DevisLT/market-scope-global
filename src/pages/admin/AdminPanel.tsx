@@ -116,7 +116,8 @@ export default function AdminPanel() {
     setBulkActionLoading(true);
     try {
       for (const userId of selectedUsers) {
-        await suspendUser.mutateAsync({ userId, suspend });
+        const user = users?.find((u) => u.id === userId);
+        await suspendUser.mutateAsync({ userId, username: user?.username || "", suspend });
       }
       toast.success(`${selectedUsers.size} users ${suspend ? "suspended" : "unsuspended"}`);
       clearSelection();
@@ -131,7 +132,8 @@ export default function AdminPanel() {
     setBulkActionLoading(true);
     try {
       for (const userId of selectedUsers) {
-        await verifyUser.mutateAsync({ userId, verify });
+        const user = users?.find((u) => u.id === userId);
+        await verifyUser.mutateAsync({ userId, username: user?.username || "", verify });
       }
       toast.success(`${selectedUsers.size} users ${verify ? "verified" : "unverified"}`);
       clearSelection();
@@ -458,6 +460,7 @@ export default function AdminPanel() {
                                   onClick={() =>
                                     verifyUser.mutate({
                                       userId: user.id,
+                                      username: user.username,
                                       verify: !user.is_verified,
                                     })
                                   }
@@ -479,6 +482,7 @@ export default function AdminPanel() {
                                   onClick={() =>
                                     suspendUser.mutate({
                                       userId: user.id,
+                                      username: user.username,
                                       suspend: !user.is_suspended,
                                     })
                                   }
@@ -598,7 +602,7 @@ export default function AdminPanel() {
                               >
                                 {!product.is_approved && (
                                   <DropdownMenuItem
-                                    onClick={() => approveProduct.mutate(product.id)}
+                                    onClick={() => approveProduct.mutate({ productId: product.id, productName: product.name })}
                                     className="focus:bg-[hsl(var(--admin-bg-muted))]"
                                   >
                                     <CheckCircle className="mr-2 h-4 w-4" />
@@ -606,7 +610,7 @@ export default function AdminPanel() {
                                   </DropdownMenuItem>
                                 )}
                                 <DropdownMenuItem
-                                  onClick={() => rejectProduct.mutate(product.id)}
+                                  onClick={() => rejectProduct.mutate({ productId: product.id, productName: product.name })}
                                   className="text-[hsl(var(--admin-danger))] focus:bg-[hsl(var(--admin-bg-muted))]"
                                 >
                                   <XCircle className="mr-2 h-4 w-4" />
@@ -668,7 +672,7 @@ export default function AdminPanel() {
                       <div className="flex gap-2">
                         <Button
                           size="sm"
-                          onClick={() => approveProduct.mutate(product.id)}
+                          onClick={() => approveProduct.mutate({ productId: product.id, productName: product.name })}
                           disabled={approveProduct.isPending}
                           className="bg-[hsl(var(--admin-accent))] text-[hsl(var(--admin-accent-foreground))] hover:bg-[hsl(var(--admin-accent-glow))]"
                         >
@@ -678,7 +682,7 @@ export default function AdminPanel() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => rejectProduct.mutate(product.id)}
+                          onClick={() => rejectProduct.mutate({ productId: product.id, productName: product.name })}
                           disabled={rejectProduct.isPending}
                           className="border-[hsl(var(--admin-danger))]/50 text-[hsl(var(--admin-danger))] hover:bg-[hsl(var(--admin-danger))]/10"
                         >

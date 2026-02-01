@@ -14,6 +14,7 @@ import {
   Database,
   Bell,
   LogOut,
+  History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -46,6 +47,11 @@ const navItems = [
     label: "User Credentials",
     href: "/admin/credentials",
     icon: Eye,
+  },
+  {
+    label: "Audit Log",
+    href: "/admin/audit-log",
+    icon: History,
   },
   {
     label: "Products",
