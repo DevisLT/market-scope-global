@@ -15,6 +15,7 @@ import {
   Bell,
   LogOut,
   History,
+  FolderTree,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -47,6 +48,11 @@ const navItems = [
     label: "User Credentials",
     href: "/admin/credentials",
     icon: Eye,
+  },
+  {
+    label: "Data Management",
+    href: "/admin/data",
+    icon: FolderTree,
   },
   {
     label: "Audit Log",

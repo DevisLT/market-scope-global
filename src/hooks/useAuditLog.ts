@@ -8,18 +8,27 @@ export type AuditActionType =
   | "user_verified"
   | "user_unverified"
   | "user_role_changed"
+  | "user_password_reset"
   | "product_approved"
   | "product_rejected"
   | "product_deleted"
   | "price_verified"
   | "price_deleted"
+  | "category_created"
+  | "category_updated"
+  | "category_deleted"
+  | "location_created"
+  | "location_updated"
+  | "location_deleted"
   | "settings_changed";
+
+export type AuditTargetType = "user" | "product" | "price" | "settings" | "category" | "location";
 
 export interface AuditLogEntry {
   id: string;
   admin_id: string;
   action_type: AuditActionType;
-  target_type: "user" | "product" | "price" | "settings";
+  target_type: AuditTargetType;
   target_id: string | null;
   target_name: string | null;
   details: Record<string, unknown>;
@@ -61,7 +70,7 @@ export function useCreateAuditLog() {
       details = {},
     }: {
       action_type: AuditActionType;
-      target_type: "user" | "product" | "price" | "settings";
+      target_type: AuditTargetType;
       target_id?: string | null;
       target_name?: string | null;
       details?: Record<string, unknown>;
