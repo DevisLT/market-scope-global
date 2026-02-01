@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AdminLayout } from "@/components/admin";
-import { useAuditLogs, useRealtimeAuditLogs, type AuditActionType } from "@/hooks/useAuditLog";
+import { useAuditLogs, useRealtimeAuditLogs, type AuditActionType, type AuditTargetType } from "@/hooks/useAuditLog";
 import {
   Search,
   Loader2,
@@ -30,6 +30,11 @@ import {
   Trash2,
   Clock,
   Filter,
+  FolderPlus,
+  FolderEdit,
+  FolderMinus,
+  MapPin,
+  KeyRound,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -62,6 +67,11 @@ const actionConfig: Record<
     icon: ShieldCheck,
     color: "text-[hsl(var(--admin-accent))]",
   },
+  user_password_reset: {
+    label: "Password Reset",
+    icon: KeyRound,
+    color: "text-[hsl(var(--admin-warning))]",
+  },
   product_approved: {
     label: "Product Approved",
     icon: CheckCircle,
@@ -87,6 +97,36 @@ const actionConfig: Record<
     icon: Trash2,
     color: "text-[hsl(var(--admin-danger))]",
   },
+  category_created: {
+    label: "Category Created",
+    icon: FolderPlus,
+    color: "text-[hsl(var(--admin-success))]",
+  },
+  category_updated: {
+    label: "Category Updated",
+    icon: FolderEdit,
+    color: "text-[hsl(var(--admin-accent))]",
+  },
+  category_deleted: {
+    label: "Category Deleted",
+    icon: FolderMinus,
+    color: "text-[hsl(var(--admin-danger))]",
+  },
+  location_created: {
+    label: "Location Created",
+    icon: MapPin,
+    color: "text-[hsl(var(--admin-success))]",
+  },
+  location_updated: {
+    label: "Location Updated",
+    icon: MapPin,
+    color: "text-[hsl(var(--admin-accent))]",
+  },
+  location_deleted: {
+    label: "Location Deleted",
+    icon: MapPin,
+    color: "text-[hsl(var(--admin-danger))]",
+  },
   settings_changed: {
     label: "Settings Changed",
     icon: ShieldCheck,
@@ -94,11 +134,13 @@ const actionConfig: Record<
   },
 };
 
-const targetTypeLabels: Record<string, string> = {
+const targetTypeLabels: Record<AuditTargetType, string> = {
   user: "User",
   product: "Product",
   price: "Price",
   settings: "Settings",
+  category: "Category",
+  location: "Location",
 };
 
 export default function AuditLog() {

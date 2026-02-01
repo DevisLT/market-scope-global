@@ -49,6 +49,7 @@ import AdminPanel from "./pages/admin/AdminPanel";
 import SystemOverview from "./pages/admin/SystemOverview";
 import UserCredentials from "./pages/admin/UserCredentials";
 import AuditLog from "./pages/admin/AuditLog";
+import DataManagement from "./pages/admin/DataManagement";
 import Settings from "./pages/settings/Settings";
 
 const queryClient = new QueryClient();
@@ -183,6 +184,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["admin"]}>
                   <AuditLog />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/data"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <DataManagement />
                 </ProtectedRoute>
               }
             />

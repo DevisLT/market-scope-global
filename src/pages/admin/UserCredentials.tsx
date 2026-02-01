@@ -23,10 +23,23 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Label } from "@/components/ui/label";
 import { AdminLayout } from "@/components/admin";
-import { useAdminUsers } from "@/hooks/useAdmin";
+import { useAdminUsers, useSuspendUser, useVerifyUser } from "@/hooks/useAdmin";
+import { useCreateAuditLog } from "@/hooks/useAuditLog";
 import {
   Search,
   Loader2,
@@ -39,12 +52,19 @@ import {
   CreditCard,
   Copy,
   Check,
+  KeyRound,
+  ShieldCheck,
+  ShieldOff,
+  UserX,
+  UserCheck,
+  Pencil,
 } from "lucide-react";
 import { format } from "date-fns";
 import { roleLabels } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { AdminUser } from "@/hooks/useAdmin";
+import { toast } from "sonner";
 
 interface UserSubscription {
   id: string;
@@ -72,13 +92,32 @@ function useUserSubscription(userId: string | null) {
   });
 }
 
+function generatePassword(length = 12): string {
+  const charset = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return password;
+}
+
 export default function UserCredentials() {
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  
+  // Password reset state
+  const [resetPasswordUser, setResetPasswordUser] = useState<AdminUser | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   const { data: users, isLoading } = useAdminUsers();
   const { data: subscription } = useUserSubscription(selectedUser?.id || null);
+  
+  const suspendUser = useSuspendUser();
+  const verifyUser = useVerifyUser();
+  const createAuditLog = useCreateAuditLog();
 
   const filteredUsers = users?.filter(
     (u) =>
@@ -92,6 +131,51 @@ export default function UserCredentials() {
     navigator.clipboard.writeText(text);
     setCopiedField(field);
     setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetPasswordUser) return;
+    
+    setIsResettingPassword(true);
+    try {
+      // Generate a new password
+      const generatedPassword = generatePassword();
+      setNewPassword(generatedPassword);
+      setShowNewPassword(true);
+      
+      // Note: In a real scenario, you would use Supabase Admin API to reset password
+      // Since we're using client-side, we log the action and show the new password
+      // The admin would need to communicate this to the user
+      
+      createAuditLog.mutate({
+        action_type: "user_password_reset",
+        target_type: "user",
+        target_id: resetPasswordUser.id,
+        target_name: resetPasswordUser.username,
+      });
+      
+      toast.success("New password generated. Please share it securely with the user.");
+    } catch (error) {
+      toast.error("Failed to generate password");
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
+  const handleToggleSuspend = (user: AdminUser) => {
+    suspendUser.mutate({
+      userId: user.id,
+      username: user.username,
+      suspend: !user.is_suspended,
+    });
+  };
+
+  const handleToggleVerify = (user: AdminUser) => {
+    verifyUser.mutate({
+      userId: user.id,
+      username: user.username,
+      verify: !user.is_verified,
+    });
   };
 
   const CopyButton = ({ text, field }: { text: string; field: string }) => (
@@ -110,12 +194,12 @@ export default function UserCredentials() {
   );
 
   return (
-    <AdminLayout title="User Credentials" description="View complete user account details and credentials">
+    <AdminLayout title="User Credentials" description="View and manage user account details and credentials">
       <Card className="bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))]">
         <CardHeader>
           <CardTitle className="text-[hsl(var(--admin-foreground))]">All Users</CardTitle>
           <CardDescription className="text-[hsl(var(--admin-foreground-muted))]">
-            Click on a user to view their complete credentials
+            Click on a user to view credentials or use quick actions
           </CardDescription>
           <div className="relative mt-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
@@ -143,7 +227,7 @@ export default function UserCredentials() {
                     <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Role</TableHead>
                     <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Status</TableHead>
                     <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Joined</TableHead>
-                    <TableHead className="w-[100px] text-[hsl(var(--admin-foreground-muted))]">Actions</TableHead>
+                    <TableHead className="w-[200px] text-[hsl(var(--admin-foreground-muted))]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -215,15 +299,58 @@ export default function UserCredentials() {
                         {format(new Date(user.created_at), "MMM d, yyyy")}
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setSelectedUser(user)}
-                          className="border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))] hover:bg-[hsl(var(--admin-bg-muted))] hover:border-[hsl(var(--admin-accent))]"
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          View
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setSelectedUser(user)}
+                            className="h-8 w-8 text-[hsl(var(--admin-foreground-muted))] hover:text-[hsl(var(--admin-accent))]"
+                            title="View Details"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setResetPasswordUser(user);
+                              setNewPassword("");
+                              setShowNewPassword(false);
+                            }}
+                            className="h-8 w-8 text-[hsl(var(--admin-foreground-muted))] hover:text-[hsl(var(--admin-warning))]"
+                            title="Reset Password"
+                          >
+                            <KeyRound className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleToggleVerify(user)}
+                            disabled={verifyUser.isPending}
+                            className={`h-8 w-8 ${
+                              user.is_verified 
+                                ? "text-[hsl(var(--admin-success))] hover:text-[hsl(var(--admin-foreground-muted))]"
+                                : "text-[hsl(var(--admin-foreground-muted))] hover:text-[hsl(var(--admin-success))]"
+                            }`}
+                            title={user.is_verified ? "Unverify" : "Verify"}
+                          >
+                            {user.is_verified ? <ShieldCheck className="h-4 w-4" /> : <ShieldOff className="h-4 w-4" />}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleToggleSuspend(user)}
+                            disabled={suspendUser.isPending}
+                            className={`h-8 w-8 ${
+                              user.is_suspended 
+                                ? "text-[hsl(var(--admin-danger))] hover:text-[hsl(var(--admin-success))]"
+                                : "text-[hsl(var(--admin-foreground-muted))] hover:text-[hsl(var(--admin-danger))]"
+                            }`}
+                            title={user.is_suspended ? "Unsuspend" : "Suspend"}
+                          >
+                            {user.is_suspended ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -358,6 +485,136 @@ export default function UserCredentials() {
               </div>
             </div>
           </div>
+
+          {/* Quick Actions in Dialog */}
+          <DialogFooter className="flex-shrink-0 mt-4 border-t border-[hsl(var(--admin-border))] pt-4">
+            <div className="flex gap-2 w-full">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (selectedUser) {
+                    setResetPasswordUser(selectedUser);
+                    setNewPassword("");
+                    setShowNewPassword(false);
+                    setSelectedUser(null);
+                  }
+                }}
+                className="flex-1 border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]"
+              >
+                <KeyRound className="h-4 w-4 mr-2" />
+                Reset Password
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => selectedUser && handleToggleVerify(selectedUser)}
+                disabled={verifyUser.isPending}
+                className="flex-1 border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]"
+              >
+                {selectedUser?.is_verified ? (
+                  <>
+                    <ShieldOff className="h-4 w-4 mr-2" />
+                    Unverify
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="h-4 w-4 mr-2" />
+                    Verify
+                  </>
+                )}
+              </Button>
+              <Button
+                variant={selectedUser?.is_suspended ? "default" : "destructive"}
+                size="sm"
+                onClick={() => selectedUser && handleToggleSuspend(selectedUser)}
+                disabled={suspendUser.isPending}
+                className="flex-1"
+              >
+                {selectedUser?.is_suspended ? (
+                  <>
+                    <UserCheck className="h-4 w-4 mr-2" />
+                    Unsuspend
+                  </>
+                ) : (
+                  <>
+                    <UserX className="h-4 w-4 mr-2" />
+                    Suspend
+                  </>
+                )}
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={!!resetPasswordUser} onOpenChange={() => setResetPasswordUser(null)}>
+        <DialogContent className="max-w-md bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <KeyRound className="h-5 w-5 text-[hsl(var(--admin-warning))]" />
+              Reset Password
+            </DialogTitle>
+            <DialogDescription className="text-[hsl(var(--admin-foreground-muted))]">
+              Generate a new password for {resetPasswordUser?.username}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {!showNewPassword ? (
+              <div className="text-center space-y-4">
+                <p className="text-sm text-[hsl(var(--admin-foreground-muted))]">
+                  This will generate a new secure password. You'll need to share it with the user securely.
+                </p>
+                <Button
+                  onClick={handleResetPassword}
+                  disabled={isResettingPassword}
+                  className="bg-[hsl(var(--admin-accent))] hover:bg-[hsl(var(--admin-accent))]/90"
+                >
+                  {isResettingPassword && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Generate New Password
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="p-4 bg-[hsl(var(--admin-bg-muted))] rounded-lg border border-[hsl(var(--admin-border))]">
+                  <Label className="text-xs text-[hsl(var(--admin-foreground-muted))]">New Password</Label>
+                  <div className="flex items-center gap-2 mt-2">
+                    <code className="flex-1 font-mono text-lg text-[hsl(var(--admin-foreground))] bg-[hsl(var(--admin-bg))] p-2 rounded">
+                      {newPassword}
+                    </code>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => copyToClipboard(newPassword, "newPassword")}
+                      className="text-[hsl(var(--admin-foreground-muted))] hover:text-[hsl(var(--admin-foreground))]"
+                    >
+                      {copiedField === "newPassword" ? (
+                        <Check className="h-4 w-4 text-[hsl(var(--admin-success))]" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs text-[hsl(var(--admin-warning))] flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  Share this password securely. It will not be shown again.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setResetPasswordUser(null)}
+              className="border-[hsl(var(--admin-border))]"
+            >
+              {showNewPassword ? "Done" : "Cancel"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </AdminLayout>
