@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,8 @@ import {
   ShieldOff,
   Loader2,
   AlertTriangle,
+  Eye,
+  LayoutDashboard,
 } from "lucide-react";
 import { format } from "date-fns";
 import { roleLabels } from "@/lib/auth";
@@ -81,11 +84,27 @@ export default function AdminPanel() {
   return (
     <Layout showFooter={false}>
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Admin Panel</h1>
-          <p className="text-muted-foreground">
-            Manage users, products, and system settings
-          </p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold">Admin Panel</h1>
+            <p className="text-muted-foreground">
+              Manage users, products, and system settings
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" asChild>
+              <Link to="/admin/credentials">
+                <Eye className="mr-2 h-4 w-4" />
+                User Credentials
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/admin/system">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                System Overview
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Stats Grid */}
