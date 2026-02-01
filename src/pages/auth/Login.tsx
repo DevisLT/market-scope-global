@@ -179,11 +179,6 @@ export default function Login() {
                 Sign up
               </Link>
             </p>
-            <p className="text-center text-sm text-muted-foreground">
-              <Link to="/phone-login" className="text-primary hover:underline">
-                Sign in with phone number
-              </Link>
-            </p>
           </CardContent>
         </Card>
       </div>
