@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AdminLayout } from "@/components/admin";
 import {
   useAdminUsers,
   useAdminProducts,
@@ -178,209 +178,204 @@ export default function AdminPanel() {
   const pendingProducts = filteredProducts?.filter((p) => !p.is_approved);
 
   return (
-    <Layout showFooter={false}>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">Admin Panel</h1>
-            <p className="text-muted-foreground">
-              Manage users, products, and system settings
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" asChild>
-              <Link to="/admin/credentials">
-                <Eye className="mr-2 h-4 w-4" />
-                User Credentials
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link to="/admin/system">
-                <LayoutDashboard className="mr-2 h-4 w-4" />
-                System Overview
-              </Link>
-            </Button>
-          </div>
-        </div>
+    <AdminLayout title="Admin Panel" description="Manage users, products, and system settings">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        {[
+          {
+            label: "Total Users",
+            value: stats?.totalUsers || 0,
+            icon: Users,
+            color: "text-[hsl(var(--admin-accent))]",
+          },
+          {
+            label: "Total Products",
+            value: stats?.totalProducts || 0,
+            icon: Package,
+            color: "text-[hsl(var(--admin-success))]",
+          },
+          {
+            label: "Pending Approval",
+            value: stats?.pendingProducts || 0,
+            icon: AlertTriangle,
+            color: "text-[hsl(var(--admin-warning))]",
+          },
+          {
+            label: "Total Prices",
+            value: stats?.totalPrices || 0,
+            icon: DollarSign,
+            color: "text-purple-400",
+          },
+          {
+            label: "Active Subscriptions",
+            value: stats?.activeSubscriptions || 0,
+            icon: CreditCard,
+            color: "text-pink-400",
+          },
+        ].map((stat) => (
+          <Card key={stat.label} className="bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))]">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-[hsl(var(--admin-foreground-muted))]">
+                {stat.label}
+              </CardTitle>
+              <stat.icon className={`h-4 w-4 ${stat.color}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-[hsl(var(--admin-foreground))]">
+                {statsLoading ? (
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                ) : (
+                  stat.value.toLocaleString()
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          {[
-            {
-              label: "Total Users",
-              value: stats?.totalUsers || 0,
-              icon: Users,
-              color: "text-blue-500",
-            },
-            {
-              label: "Total Products",
-              value: stats?.totalProducts || 0,
-              icon: Package,
-              color: "text-green-500",
-            },
-            {
-              label: "Pending Approval",
-              value: stats?.pendingProducts || 0,
-              icon: AlertTriangle,
-              color: "text-amber-500",
-            },
-            {
-              label: "Total Prices",
-              value: stats?.totalPrices || 0,
-              icon: DollarSign,
-              color: "text-purple-500",
-            },
-            {
-              label: "Active Subscriptions",
-              value: stats?.activeSubscriptions || 0,
-              icon: CreditCard,
-              color: "text-pink-500",
-            },
-          ].map((stat) => (
-            <Card key={stat.label}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.label}
-                </CardTitle>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {statsLoading ? (
-                    <Loader2 className="h-6 w-6 animate-spin" />
-                  ) : (
-                    stat.value.toLocaleString()
+      <Tabs defaultValue="users" className="space-y-6">
+        <TabsList className="bg-[hsl(var(--admin-bg-muted))] border border-[hsl(var(--admin-border))]">
+          <TabsTrigger
+            value="users"
+            className="data-[state=active]:bg-[hsl(var(--admin-accent))] data-[state=active]:text-[hsl(var(--admin-accent-foreground))]"
+          >
+            Users
+          </TabsTrigger>
+          <TabsTrigger
+            value="products"
+            className="data-[state=active]:bg-[hsl(var(--admin-accent))] data-[state=active]:text-[hsl(var(--admin-accent-foreground))]"
+          >
+            Products
+          </TabsTrigger>
+          <TabsTrigger
+            value="pending"
+            className="data-[state=active]:bg-[hsl(var(--admin-accent))] data-[state=active]:text-[hsl(var(--admin-accent-foreground))]"
+          >
+            Pending Approval
+            {(stats?.pendingProducts || 0) > 0 && (
+              <Badge className="ml-2 bg-[hsl(var(--admin-danger))] text-white">
+                {stats?.pendingProducts}
+              </Badge>
+            )}
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Users Tab */}
+        <TabsContent value="users">
+          <Card className="bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))]">
+            <CardHeader>
+              <CardTitle className="text-[hsl(var(--admin-foreground))]">User Management</CardTitle>
+              <CardDescription className="text-[hsl(var(--admin-foreground-muted))]">
+                View and manage all registered users
+              </CardDescription>
+              <div className="relative mt-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
+                <Input
+                  placeholder="Search users..."
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                  className="pl-10 max-w-sm bg-[hsl(var(--admin-bg-muted))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))] placeholder:text-[hsl(var(--admin-foreground-muted))]"
+                />
+              </div>
+            </CardHeader>
+            <CardContent>
+              {/* Bulk Actions Toolbar */}
+              {selectedUsers.size > 0 && (
+                <div className="flex items-center gap-4 p-4 mb-4 bg-[hsl(var(--admin-bg-muted))] rounded-lg border border-[hsl(var(--admin-accent))]/30">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-[hsl(var(--admin-foreground))]">
+                      {selectedUsers.size} user{selectedUsers.size > 1 ? "s" : ""} selected
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearSelection}
+                      className="h-6 px-2 text-[hsl(var(--admin-foreground-muted))]"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div className="h-4 w-px bg-[hsl(var(--admin-border))]" />
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleBulkVerify(true)}
+                      disabled={bulkActionLoading}
+                      className="border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]"
+                    >
+                      <UserCheck className="h-4 w-4 mr-1" />
+                      Verify
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleBulkVerify(false)}
+                      disabled={bulkActionLoading}
+                      className="border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]"
+                    >
+                      <ShieldOff className="h-4 w-4 mr-1" />
+                      Unverify
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleBulkSuspend(true)}
+                      disabled={bulkActionLoading}
+                      className="border-[hsl(var(--admin-danger))]/50 text-[hsl(var(--admin-danger))] hover:bg-[hsl(var(--admin-danger))]/10"
+                    >
+                      <UserX className="h-4 w-4 mr-1" />
+                      Suspend
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleBulkSuspend(false)}
+                      disabled={bulkActionLoading}
+                      className="border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-1" />
+                      Unsuspend
+                    </Button>
+                    <div className="h-4 w-px bg-[hsl(var(--admin-border))]" />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleExportUsers}
+                      disabled={bulkActionLoading}
+                      className="border-[hsl(var(--admin-accent))]/50 text-[hsl(var(--admin-accent))]"
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      Export CSV
+                    </Button>
+                  </div>
+                  {bulkActionLoading && (
+                    <Loader2 className="h-4 w-4 animate-spin ml-auto text-[hsl(var(--admin-accent))]" />
                   )}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <Tabs defaultValue="users" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="products">Products</TabsTrigger>
-            <TabsTrigger value="pending">
-              Pending Approval
-              {(stats?.pendingProducts || 0) > 0 && (
-                <Badge variant="destructive" className="ml-2">
-                  {stats?.pendingProducts}
-                </Badge>
               )}
-            </TabsTrigger>
-          </TabsList>
 
-          {/* Users Tab */}
-          <TabsContent value="users">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>
-                  View and manage all registered users
-                </CardDescription>
-                <div className="relative mt-4">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search users..."
-                    value={userSearch}
-                    onChange={(e) => setUserSearch(e.target.value)}
-                    className="pl-10 max-w-sm"
-                  />
+              {usersLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-[hsl(var(--admin-accent))]" />
                 </div>
-              </CardHeader>
-              <CardContent>
-                {/* Bulk Actions Toolbar */}
-                {selectedUsers.size > 0 && (
-                  <div className="flex items-center gap-4 p-4 mb-4 bg-muted rounded-lg border">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">
-                        {selectedUsers.size} user{selectedUsers.size > 1 ? "s" : ""} selected
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={clearSelection}
-                        className="h-6 px-2"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                    <div className="h-4 w-px bg-border" />
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleBulkVerify(true)}
-                        disabled={bulkActionLoading}
-                      >
-                        <UserCheck className="h-4 w-4 mr-1" />
-                        Verify
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleBulkVerify(false)}
-                        disabled={bulkActionLoading}
-                      >
-                        <ShieldOff className="h-4 w-4 mr-1" />
-                        Unverify
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleBulkSuspend(true)}
-                        disabled={bulkActionLoading}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <UserX className="h-4 w-4 mr-1" />
-                        Suspend
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleBulkSuspend(false)}
-                        disabled={bulkActionLoading}
-                      >
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        Unsuspend
-                      </Button>
-                      <div className="h-4 w-px bg-border" />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleExportUsers}
-                        disabled={bulkActionLoading}
-                      >
-                        <Download className="h-4 w-4 mr-1" />
-                        Export CSV
-                      </Button>
-                    </div>
-                    {bulkActionLoading && (
-                      <Loader2 className="h-4 w-4 animate-spin ml-auto" />
-                    )}
-                  </div>
-                )}
-
-                {usersLoading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  </div>
-                ) : (
+              ) : (
+                <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[50px]">
+                      <TableRow className="border-[hsl(var(--admin-border))] hover:bg-transparent">
+                        <TableHead className="w-[50px] text-[hsl(var(--admin-foreground-muted))]">
                           <Checkbox
                             checked={allFilteredSelected}
                             onCheckedChange={toggleAllUsers}
                             aria-label="Select all users"
+                            className="border-[hsl(var(--admin-border))]"
                           />
                         </TableHead>
-                        <TableHead>User</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Joined</TableHead>
+                        <TableHead className="text-[hsl(var(--admin-foreground-muted))]">User</TableHead>
+                        <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Role</TableHead>
+                        <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Status</TableHead>
+                        <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Joined</TableHead>
                         <TableHead className="w-[70px]"></TableHead>
                       </TableRow>
                     </TableHeader>
@@ -388,62 +383,77 @@ export default function AdminPanel() {
                       {filteredUsers?.map((user) => (
                         <TableRow 
                           key={user.id}
-                          className={selectedUsers.has(user.id) ? "bg-muted/50" : ""}
+                          className={`border-[hsl(var(--admin-border))] hover:bg-[hsl(var(--admin-bg-muted))] ${selectedUsers.has(user.id) ? "bg-[hsl(var(--admin-accent))]/5" : ""}`}
                         >
                           <TableCell>
                             <Checkbox
                               checked={selectedUsers.has(user.id)}
                               onCheckedChange={() => toggleUserSelection(user.id)}
                               aria-label={`Select ${user.username}`}
+                              className="border-[hsl(var(--admin-border))]"
                             />
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-3">
                               <Avatar>
                                 <AvatarImage src={user.avatar_url || undefined} />
-                                <AvatarFallback>
+                                <AvatarFallback className="bg-[hsl(var(--admin-accent))] text-[hsl(var(--admin-accent-foreground))]">
                                   {user.username.slice(0, 2).toUpperCase()}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="font-medium">{user.username}</p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="font-medium text-[hsl(var(--admin-foreground))]">{user.username}</p>
+                                <p className="text-sm text-[hsl(var(--admin-foreground-muted))]">
                                   {user.email || user.full_name || "No email"}
                                 </p>
                               </div>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline">
+                            <Badge
+                              variant="outline"
+                              className="border-[hsl(var(--admin-accent))] text-[hsl(var(--admin-accent))]"
+                            >
                               {user.role ? roleLabels[user.role] : "Unknown"}
                             </Badge>
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
                               {user.is_verified && (
-                                <Badge className="bg-success text-success-foreground">
+                                <Badge className="bg-[hsl(var(--admin-success))]/20 text-[hsl(var(--admin-success))] border-0">
                                   Verified
                                 </Badge>
                               )}
                               {user.is_suspended && (
-                                <Badge variant="destructive">Suspended</Badge>
+                                <Badge className="bg-[hsl(var(--admin-danger))]/20 text-[hsl(var(--admin-danger))] border-0">
+                                  Suspended
+                                </Badge>
                               )}
                               {!user.is_verified && !user.is_suspended && (
-                                <Badge variant="secondary">Unverified</Badge>
+                                <Badge className="bg-[hsl(var(--admin-bg-muted))] text-[hsl(var(--admin-foreground-muted))] border-0">
+                                  Unverified
+                                </Badge>
                               )}
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-[hsl(var(--admin-foreground))]">
                             {format(new Date(user.created_at), "MMM d, yyyy")}
                           </TableCell>
                           <TableCell>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-[hsl(var(--admin-foreground-muted))] hover:text-[hsl(var(--admin-foreground))] hover:bg-[hsl(var(--admin-bg-muted))]"
+                                >
                                   <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="bg-popover">
+                              <DropdownMenuContent
+                                align="end"
+                                className="bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]"
+                              >
                                 <DropdownMenuItem
                                   onClick={() =>
                                     verifyUser.mutate({
@@ -451,6 +461,7 @@ export default function AdminPanel() {
                                       verify: !user.is_verified,
                                     })
                                   }
+                                  className="focus:bg-[hsl(var(--admin-bg-muted))]"
                                 >
                                   {user.is_verified ? (
                                     <>
@@ -471,7 +482,7 @@ export default function AdminPanel() {
                                       suspend: !user.is_suspended,
                                     })
                                   }
-                                  className={user.is_suspended ? "" : "text-destructive"}
+                                  className={`focus:bg-[hsl(var(--admin-bg-muted))] ${!user.is_suspended ? "text-[hsl(var(--admin-danger))]" : ""}`}
                                 >
                                   {user.is_suspended ? (
                                     <>
@@ -492,82 +503,103 @@ export default function AdminPanel() {
                       ))}
                     </TableBody>
                   </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Products Tab */}
-          <TabsContent value="products">
-            <Card>
-              <CardHeader>
-                <CardTitle>All Products</CardTitle>
-                <CardDescription>
-                  View and manage all product listings
-                </CardDescription>
-                <div className="relative mt-4">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search products..."
-                    value={productSearch}
-                    onChange={(e) => setProductSearch(e.target.value)}
-                    className="pl-10 max-w-sm"
-                  />
                 </div>
-              </CardHeader>
-              <CardContent>
-                {productsLoading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  </div>
-                ) : (
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Products Tab */}
+        <TabsContent value="products">
+          <Card className="bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))]">
+            <CardHeader>
+              <CardTitle className="text-[hsl(var(--admin-foreground))]">All Products</CardTitle>
+              <CardDescription className="text-[hsl(var(--admin-foreground-muted))]">
+                View and manage all product listings
+              </CardDescription>
+              <div className="relative mt-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
+                <Input
+                  placeholder="Search products..."
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  className="pl-10 max-w-sm bg-[hsl(var(--admin-bg-muted))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))] placeholder:text-[hsl(var(--admin-foreground-muted))]"
+                />
+              </div>
+            </CardHeader>
+            <CardContent>
+              {productsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-[hsl(var(--admin-accent))]" />
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>Product</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Seller</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Created</TableHead>
+                      <TableRow className="border-[hsl(var(--admin-border))] hover:bg-transparent">
+                        <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Product</TableHead>
+                        <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Category</TableHead>
+                        <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Seller</TableHead>
+                        <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Status</TableHead>
+                        <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Created</TableHead>
                         <TableHead className="w-[70px]"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredProducts?.map((product) => (
-                        <TableRow key={product.id}>
-                          <TableCell className="font-medium">
+                        <TableRow
+                          key={product.id}
+                          className="border-[hsl(var(--admin-border))] hover:bg-[hsl(var(--admin-bg-muted))]"
+                        >
+                          <TableCell className="font-medium text-[hsl(var(--admin-foreground))]">
                             {product.name}
                           </TableCell>
-                          <TableCell>{product.category?.name || "—"}</TableCell>
-                          <TableCell>{product.seller?.username || "—"}</TableCell>
+                          <TableCell className="text-[hsl(var(--admin-foreground))]">
+                            {product.category?.name || "—"}
+                          </TableCell>
+                          <TableCell className="text-[hsl(var(--admin-foreground))]">
+                            {product.seller?.username || "—"}
+                          </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
                               {product.is_approved ? (
-                                <Badge className="bg-success text-success-foreground">
+                                <Badge className="bg-[hsl(var(--admin-success))]/20 text-[hsl(var(--admin-success))] border-0">
                                   Approved
                                 </Badge>
                               ) : (
-                                <Badge variant="secondary">Pending</Badge>
+                                <Badge className="bg-[hsl(var(--admin-warning))]/20 text-[hsl(var(--admin-warning))] border-0">
+                                  Pending
+                                </Badge>
                               )}
                               {!product.is_active && (
-                                <Badge variant="outline">Inactive</Badge>
+                                <Badge className="bg-[hsl(var(--admin-bg-muted))] text-[hsl(var(--admin-foreground-muted))] border-0">
+                                  Inactive
+                                </Badge>
                               )}
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-[hsl(var(--admin-foreground))]">
                             {format(new Date(product.created_at), "MMM d, yyyy")}
                           </TableCell>
                           <TableCell>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-[hsl(var(--admin-foreground-muted))] hover:text-[hsl(var(--admin-foreground))] hover:bg-[hsl(var(--admin-bg-muted))]"
+                                >
                                   <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="bg-popover">
+                              <DropdownMenuContent
+                                align="end"
+                                className="bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]"
+                              >
                                 {!product.is_approved && (
                                   <DropdownMenuItem
                                     onClick={() => approveProduct.mutate(product.id)}
+                                    className="focus:bg-[hsl(var(--admin-bg-muted))]"
                                   >
                                     <CheckCircle className="mr-2 h-4 w-4" />
                                     Approve
@@ -575,7 +607,7 @@ export default function AdminPanel() {
                                 )}
                                 <DropdownMenuItem
                                   onClick={() => rejectProduct.mutate(product.id)}
-                                  className="text-destructive"
+                                  className="text-[hsl(var(--admin-danger))] focus:bg-[hsl(var(--admin-bg-muted))]"
                                 >
                                   <XCircle className="mr-2 h-4 w-4" />
                                   Reject
@@ -587,79 +619,81 @@ export default function AdminPanel() {
                       ))}
                     </TableBody>
                   </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          {/* Pending Approval Tab */}
-          <TabsContent value="pending">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pending Approval</CardTitle>
-                <CardDescription>
-                  Products waiting for admin review
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {productsLoading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  </div>
-                ) : pendingProducts?.length === 0 ? (
-                  <div className="text-center py-8">
-                    <CheckCircle className="h-12 w-12 mx-auto text-success mb-4" />
-                    <h3 className="text-lg font-medium">All caught up!</h3>
-                    <p className="text-muted-foreground">
-                      No products pending approval
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {pendingProducts?.map((product) => (
-                      <div
-                        key={product.id}
-                        className="flex items-center justify-between p-4 border rounded-lg"
-                      >
-                        <div>
-                          <h4 className="font-medium">{product.name}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            by {product.seller?.username} • {product.category?.name}
+        {/* Pending Approval Tab */}
+        <TabsContent value="pending">
+          <Card className="bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))]">
+            <CardHeader>
+              <CardTitle className="text-[hsl(var(--admin-foreground))]">Pending Approval</CardTitle>
+              <CardDescription className="text-[hsl(var(--admin-foreground-muted))]">
+                Products waiting for admin review
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {productsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-[hsl(var(--admin-accent))]" />
+                </div>
+              ) : pendingProducts?.length === 0 ? (
+                <div className="text-center py-8">
+                  <CheckCircle className="h-12 w-12 mx-auto text-[hsl(var(--admin-success))] mb-4" />
+                  <h3 className="text-lg font-medium text-[hsl(var(--admin-foreground))]">All caught up!</h3>
+                  <p className="text-[hsl(var(--admin-foreground-muted))]">
+                    No products pending approval
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {pendingProducts?.map((product) => (
+                    <div
+                      key={product.id}
+                      className="flex items-center justify-between p-4 border border-[hsl(var(--admin-border))] rounded-lg bg-[hsl(var(--admin-bg-muted))] hover:border-[hsl(var(--admin-accent))]/30 transition-colors"
+                    >
+                      <div>
+                        <h4 className="font-medium text-[hsl(var(--admin-foreground))]">{product.name}</h4>
+                        <p className="text-sm text-[hsl(var(--admin-foreground-muted))]">
+                          by {product.seller?.username} • {product.category?.name}
+                        </p>
+                        {product.description && (
+                          <p className="text-sm text-[hsl(var(--admin-foreground-muted))] mt-1 line-clamp-2">
+                            {product.description}
                           </p>
-                          {product.description && (
-                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                              {product.description}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => approveProduct.mutate(product.id)}
-                            disabled={approveProduct.isPending}
-                          >
-                            <CheckCircle className="mr-2 h-4 w-4" />
-                            Approve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => rejectProduct.mutate(product.id)}
-                            disabled={rejectProduct.isPending}
-                          >
-                            <XCircle className="mr-2 h-4 w-4" />
-                            Reject
-                          </Button>
-                        </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </Layout>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => approveProduct.mutate(product.id)}
+                          disabled={approveProduct.isPending}
+                          className="bg-[hsl(var(--admin-accent))] text-[hsl(var(--admin-accent-foreground))] hover:bg-[hsl(var(--admin-accent-glow))]"
+                        >
+                          <CheckCircle className="mr-2 h-4 w-4" />
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => rejectProduct.mutate(product.id)}
+                          disabled={rejectProduct.isPending}
+                          className="border-[hsl(var(--admin-danger))]/50 text-[hsl(var(--admin-danger))] hover:bg-[hsl(var(--admin-danger))]/10"
+                        >
+                          <XCircle className="mr-2 h-4 w-4" />
+                          Reject
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </AdminLayout>
   );
 }

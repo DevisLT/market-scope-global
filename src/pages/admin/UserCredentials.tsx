@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +25,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AdminLayout } from "@/components/admin";
 import { useAdminUsers } from "@/hooks/useAdmin";
 import {
   Search,
@@ -39,11 +39,9 @@ import {
   CreditCard,
   Copy,
   Check,
-  ArrowLeft,
 } from "lucide-react";
 import { format } from "date-fns";
 import { roleLabels } from "@/lib/auth";
-import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { AdminUser } from "@/hooks/useAdmin";
@@ -100,11 +98,11 @@ export default function UserCredentials() {
     <Button
       variant="ghost"
       size="icon"
-      className="h-6 w-6"
+      className="h-6 w-6 text-[hsl(var(--admin-foreground-muted))] hover:text-[hsl(var(--admin-foreground))]"
       onClick={() => copyToClipboard(text, field)}
     >
       {copiedField === field ? (
-        <Check className="h-3 w-3 text-green-500" />
+        <Check className="h-3 w-3 text-[hsl(var(--admin-success))]" />
       ) : (
         <Copy className="h-3 w-3" />
       )}
@@ -112,109 +110,108 @@ export default function UserCredentials() {
   );
 
   return (
-    <Layout showFooter={false}>
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <Button variant="ghost" asChild className="mb-4">
-            <Link to="/admin">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Admin Panel
-            </Link>
-          </Button>
-          <h1 className="text-3xl font-bold">User Credentials</h1>
-          <p className="text-muted-foreground">
-            View complete user account details and credentials
-          </p>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>All Users</CardTitle>
-            <CardDescription>
-              Click on a user to view their complete credentials
-            </CardDescription>
-            <div className="relative mt-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by username, email, name, or phone..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 max-w-md"
-              />
+    <AdminLayout title="User Credentials" description="View complete user account details and credentials">
+      <Card className="bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))]">
+        <CardHeader>
+          <CardTitle className="text-[hsl(var(--admin-foreground))]">All Users</CardTitle>
+          <CardDescription className="text-[hsl(var(--admin-foreground-muted))]">
+            Click on a user to view their complete credentials
+          </CardDescription>
+          <div className="relative mt-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
+            <Input
+              placeholder="Search by username, email, name, or phone..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10 max-w-md bg-[hsl(var(--admin-bg-muted))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))] placeholder:text-[hsl(var(--admin-foreground-muted))]"
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-[hsl(var(--admin-accent))]" />
             </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
-            ) : (
+          ) : (
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Joined</TableHead>
-                    <TableHead className="w-[100px]">Actions</TableHead>
+                  <TableRow className="border-[hsl(var(--admin-border))] hover:bg-transparent">
+                    <TableHead className="text-[hsl(var(--admin-foreground-muted))]">User</TableHead>
+                    <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Email</TableHead>
+                    <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Phone</TableHead>
+                    <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Role</TableHead>
+                    <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Status</TableHead>
+                    <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Joined</TableHead>
+                    <TableHead className="w-[100px] text-[hsl(var(--admin-foreground-muted))]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredUsers?.map((user) => (
-                    <TableRow key={user.id}>
+                    <TableRow
+                      key={user.id}
+                      className="border-[hsl(var(--admin-border))] hover:bg-[hsl(var(--admin-bg-muted))]"
+                    >
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
                             <AvatarImage src={user.avatar_url || undefined} />
-                            <AvatarFallback className="text-xs">
+                            <AvatarFallback className="bg-[hsl(var(--admin-accent))] text-[hsl(var(--admin-accent-foreground))] text-xs">
                               {user.username.slice(0, 2).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium text-sm">{user.username}</p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="font-medium text-sm text-[hsl(var(--admin-foreground))]">
+                              {user.username}
+                            </p>
+                            <p className="text-xs text-[hsl(var(--admin-foreground-muted))]">
                               {user.full_name || "—"}
                             </p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm">
-                          {user.email || <span className="text-muted-foreground">No email</span>}
+                        <span className="text-sm text-[hsl(var(--admin-foreground))]">
+                          {user.email || (
+                            <span className="text-[hsl(var(--admin-foreground-muted))]">No email</span>
+                          )}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm">
-                          {user.phone || <span className="text-muted-foreground">—</span>}
+                        <span className="text-sm text-[hsl(var(--admin-foreground))]">
+                          {user.phone || (
+                            <span className="text-[hsl(var(--admin-foreground-muted))]">—</span>
+                          )}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge
+                          variant="outline"
+                          className="text-xs border-[hsl(var(--admin-accent))] text-[hsl(var(--admin-accent))]"
+                        >
                           {user.role ? roleLabels[user.role] : "Unknown"}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
                           {user.is_verified && (
-                            <Badge className="bg-green-100 text-green-800 text-xs">
+                            <Badge className="bg-[hsl(var(--admin-success))]/20 text-[hsl(var(--admin-success))] text-xs border-0">
                               Verified
                             </Badge>
                           )}
                           {user.is_suspended && (
-                            <Badge variant="destructive" className="text-xs">
+                            <Badge className="bg-[hsl(var(--admin-danger))]/20 text-[hsl(var(--admin-danger))] text-xs border-0">
                               Suspended
                             </Badge>
                           )}
                           {!user.is_verified && !user.is_suspended && (
-                            <Badge variant="secondary" className="text-xs">
+                            <Badge className="bg-[hsl(var(--admin-bg-muted))] text-[hsl(var(--admin-foreground-muted))] text-xs border-0">
                               Pending
                             </Badge>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm">
+                      <TableCell className="text-sm text-[hsl(var(--admin-foreground))]">
                         {format(new Date(user.created_at), "MMM d, yyyy")}
                       </TableCell>
                       <TableCell>
@@ -222,6 +219,7 @@ export default function UserCredentials() {
                           variant="outline"
                           size="sm"
                           onClick={() => setSelectedUser(user)}
+                          className="border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))] hover:bg-[hsl(var(--admin-bg-muted))] hover:border-[hsl(var(--admin-accent))]"
                         >
                           <Eye className="h-4 w-4 mr-1" />
                           View
@@ -231,173 +229,137 @@ export default function UserCredentials() {
                   ))}
                 </TableBody>
               </Table>
-            )}
+            </div>
+          )}
 
-            {!isLoading && filteredUsers?.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                No users found matching your search.
+          {!isLoading && filteredUsers?.length === 0 && (
+            <div className="text-center py-8 text-[hsl(var(--admin-foreground-muted))]">
+              No users found matching your search.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* User Details Dialog */}
+      <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
+        <DialogContent className="max-w-lg bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <Avatar>
+                <AvatarImage src={selectedUser?.avatar_url || undefined} />
+                <AvatarFallback className="bg-[hsl(var(--admin-accent))] text-[hsl(var(--admin-accent-foreground))]">
+                  {selectedUser?.username.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <span>{selectedUser?.username}</span>
+                {selectedUser?.role && (
+                  <Badge
+                    variant="outline"
+                    className="ml-2 text-xs border-[hsl(var(--admin-accent))] text-[hsl(var(--admin-accent))]"
+                  >
+                    {roleLabels[selectedUser.role]}
+                  </Badge>
+                )}
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </DialogTitle>
+            <DialogDescription className="text-[hsl(var(--admin-foreground-muted))]">
+              Complete user credentials and account information
+            </DialogDescription>
+          </DialogHeader>
 
-        {/* User Details Dialog */}
-        <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-3">
-                <Avatar>
-                  <AvatarImage src={selectedUser?.avatar_url || undefined} />
-                  <AvatarFallback>
-                    {selectedUser?.username.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+          <div className="space-y-3 mt-4">
+            {[
+              { icon: User, label: "User ID", value: selectedUser?.id, field: "id", mono: true },
+              { icon: User, label: "Username", value: selectedUser?.username, field: "username" },
+              { icon: User, label: "Full Name", value: selectedUser?.full_name || "Not provided", field: null },
+              { icon: Mail, label: "Email Address", value: selectedUser?.email || "Not provided", field: selectedUser?.email ? "email" : null },
+              { icon: Phone, label: "Phone Number", value: selectedUser?.phone || "Not provided", field: selectedUser?.phone ? "phone" : null },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="flex items-center justify-between p-3 bg-[hsl(var(--admin-bg-muted))] rounded-lg"
+              >
+                <div className="flex items-center gap-3">
+                  <item.icon className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
+                  <div>
+                    <p className="text-xs text-[hsl(var(--admin-foreground-muted))]">{item.label}</p>
+                    <p className={`text-sm ${item.mono ? "font-mono" : ""}`}>{item.value}</p>
+                  </div>
+                </div>
+                {item.field && item.value && (
+                  <CopyButton text={item.value} field={item.field} />
+                )}
+              </div>
+            ))}
+
+            {/* Account Status */}
+            <div className="flex items-center justify-between p-3 bg-[hsl(var(--admin-bg-muted))] rounded-lg">
+              <div className="flex items-center gap-3">
+                <Shield className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
                 <div>
-                  <span>{selectedUser?.username}</span>
-                  {selectedUser?.role && (
-                    <Badge variant="outline" className="ml-2 text-xs">
-                      {roleLabels[selectedUser.role]}
-                    </Badge>
-                  )}
-                </div>
-              </DialogTitle>
-              <DialogDescription>
-                Complete user credentials and account information
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4 mt-4">
-              {/* User ID */}
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center gap-3">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">User ID</p>
-                    <p className="text-sm font-mono">{selectedUser?.id}</p>
-                  </div>
-                </div>
-                {selectedUser?.id && (
-                  <CopyButton text={selectedUser.id} field="id" />
-                )}
-              </div>
-
-              {/* Username */}
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center gap-3">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Username</p>
-                    <p className="text-sm font-medium">{selectedUser?.username}</p>
-                  </div>
-                </div>
-                {selectedUser?.username && (
-                  <CopyButton text={selectedUser.username} field="username" />
-                )}
-              </div>
-
-              {/* Full Name */}
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center gap-3">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Full Name</p>
-                    <p className="text-sm">{selectedUser?.full_name || "Not provided"}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Email */}
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Email Address</p>
-                    <p className="text-sm">{selectedUser?.email || "Not provided"}</p>
-                  </div>
-                </div>
-                {selectedUser?.email && (
-                  <CopyButton text={selectedUser.email} field="email" />
-                )}
-              </div>
-
-              {/* Phone */}
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Phone Number</p>
-                    <p className="text-sm">{selectedUser?.phone || "Not provided"}</p>
-                  </div>
-                </div>
-                {selectedUser?.phone && (
-                  <CopyButton text={selectedUser.phone} field="phone" />
-                )}
-              </div>
-
-              {/* Account Status */}
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Shield className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Account Status</p>
-                    <div className="flex gap-2 mt-1">
-                      {selectedUser?.is_verified ? (
-                        <Badge className="bg-green-100 text-green-800">Verified</Badge>
-                      ) : (
-                        <Badge variant="secondary">Unverified</Badge>
-                      )}
-                      {selectedUser?.is_suspended && (
-                        <Badge variant="destructive">Suspended</Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Subscription */}
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center gap-3">
-                  <CreditCard className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Subscription</p>
-                    {subscription ? (
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant={
-                            subscription.status === "active"
-                              ? "default"
-                              : subscription.status === "trial"
-                              ? "secondary"
-                              : "outline"
-                          }
-                        >
-                          {subscription.plan} - {subscription.status}
-                        </Badge>
-                      </div>
+                  <p className="text-xs text-[hsl(var(--admin-foreground-muted))]">Account Status</p>
+                  <div className="flex gap-2 mt-1">
+                    {selectedUser?.is_verified ? (
+                      <Badge className="bg-[hsl(var(--admin-success))]/20 text-[hsl(var(--admin-success))]">
+                        Verified
+                      </Badge>
                     ) : (
-                      <p className="text-sm text-muted-foreground">No subscription</p>
+                      <Badge className="bg-[hsl(var(--admin-bg))] text-[hsl(var(--admin-foreground-muted))]">
+                        Unverified
+                      </Badge>
+                    )}
+                    {selectedUser?.is_suspended && (
+                      <Badge className="bg-[hsl(var(--admin-danger))]/20 text-[hsl(var(--admin-danger))]">
+                        Suspended
+                      </Badge>
                     )}
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Created Date */}
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Account Created</p>
-                    <p className="text-sm">
-                      {selectedUser?.created_at &&
-                        format(new Date(selectedUser.created_at), "MMMM d, yyyy 'at' h:mm a")}
-                    </p>
-                  </div>
+            {/* Subscription */}
+            <div className="flex items-center justify-between p-3 bg-[hsl(var(--admin-bg-muted))] rounded-lg">
+              <div className="flex items-center gap-3">
+                <CreditCard className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
+                <div>
+                  <p className="text-xs text-[hsl(var(--admin-foreground-muted))]">Subscription</p>
+                  {subscription ? (
+                    <Badge
+                      className={
+                        subscription.status === "active"
+                          ? "bg-[hsl(var(--admin-success))]/20 text-[hsl(var(--admin-success))]"
+                          : subscription.status === "trial"
+                          ? "bg-[hsl(var(--admin-accent))]/20 text-[hsl(var(--admin-accent))]"
+                          : "bg-[hsl(var(--admin-bg))] text-[hsl(var(--admin-foreground-muted))]"
+                      }
+                    >
+                      {subscription.plan} - {subscription.status}
+                    </Badge>
+                  ) : (
+                    <p className="text-sm text-[hsl(var(--admin-foreground-muted))]">No subscription</p>
+                  )}
                 </div>
               </div>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </Layout>
+
+            {/* Created Date */}
+            <div className="flex items-center justify-between p-3 bg-[hsl(var(--admin-bg-muted))] rounded-lg">
+              <div className="flex items-center gap-3">
+                <Calendar className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
+                <div>
+                  <p className="text-xs text-[hsl(var(--admin-foreground-muted))]">Account Created</p>
+                  <p className="text-sm">
+                    {selectedUser?.created_at &&
+                      format(new Date(selectedUser.created_at), "MMMM d, yyyy 'at' h:mm a")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </AdminLayout>
   );
 }
