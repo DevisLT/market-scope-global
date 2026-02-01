@@ -133,9 +133,9 @@ export default function UserCredentials() {
               <Loader2 className="h-8 w-8 animate-spin text-[hsl(var(--admin-accent))]" />
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-auto max-h-[60vh] rounded-lg border border-[hsl(var(--admin-border))]">
               <Table>
-                <TableHeader>
+                <TableHeader className="sticky top-0 bg-[hsl(var(--admin-bg-elevated))] z-10">
                   <TableRow className="border-[hsl(var(--admin-border))] hover:bg-transparent">
                     <TableHead className="text-[hsl(var(--admin-foreground-muted))]">User</TableHead>
                     <TableHead className="text-[hsl(var(--admin-foreground-muted))]">Email</TableHead>
@@ -242,8 +242,8 @@ export default function UserCredentials() {
 
       {/* User Details Dialog */}
       <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
-        <DialogContent className="max-w-lg bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]">
-          <DialogHeader>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-hidden flex flex-col bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle className="flex items-center gap-3">
               <Avatar>
                 <AvatarImage src={selectedUser?.avatar_url || undefined} />
@@ -268,7 +268,7 @@ export default function UserCredentials() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 mt-4">
+          <div className="space-y-3 mt-4 overflow-y-auto flex-1 pr-2">
             {[
               { icon: User, label: "User ID", value: selectedUser?.id, field: "id", mono: true },
               { icon: User, label: "Username", value: selectedUser?.username, field: "username" },
@@ -284,7 +284,7 @@ export default function UserCredentials() {
                   <item.icon className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
                   <div>
                     <p className="text-xs text-[hsl(var(--admin-foreground-muted))]">{item.label}</p>
-                    <p className={`text-sm ${item.mono ? "font-mono" : ""}`}>{item.value}</p>
+                    <p className={`text-sm ${item.mono ? "font-mono text-xs" : ""}`}>{item.value}</p>
                   </div>
                 </div>
                 {item.field && item.value && (
