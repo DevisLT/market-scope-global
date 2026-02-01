@@ -51,13 +51,22 @@ import {
   AlertTriangle,
   Eye,
   LayoutDashboard,
+  Download,
+  UserCheck,
+  UserX,
+  X,
 } from "lucide-react";
 import { format } from "date-fns";
 import { roleLabels } from "@/lib/auth";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
+import type { AdminUser } from "@/hooks/useAdmin";
 
 export default function AdminPanel() {
   const [userSearch, setUserSearch] = useState("");
   const [productSearch, setProductSearch] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [bulkActionLoading, setBulkActionLoading] = useState(false);
 
   const { data: stats, isLoading: statsLoading } = useAdminStats();
   const { data: users, isLoading: usersLoading } = useAdminUsers();
@@ -74,6 +83,93 @@ export default function AdminPanel() {
       u.email?.toLowerCase().includes(userSearch.toLowerCase()) ||
       u.full_name?.toLowerCase().includes(userSearch.toLowerCase())
   );
+
+  const allFilteredSelected = 
+    filteredUsers && 
+    filteredUsers.length > 0 && 
+    filteredUsers.every((u) => selectedUsers.has(u.id));
+
+  const toggleUserSelection = (userId: string) => {
+    const newSelected = new Set(selectedUsers);
+    if (newSelected.has(userId)) {
+      newSelected.delete(userId);
+    } else {
+      newSelected.add(userId);
+    }
+    setSelectedUsers(newSelected);
+  };
+
+  const toggleAllUsers = () => {
+    if (allFilteredSelected) {
+      setSelectedUsers(new Set());
+    } else {
+      const allIds = filteredUsers?.map((u) => u.id) || [];
+      setSelectedUsers(new Set(allIds));
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedUsers(new Set());
+  };
+
+  const handleBulkSuspend = async (suspend: boolean) => {
+    setBulkActionLoading(true);
+    try {
+      for (const userId of selectedUsers) {
+        await suspendUser.mutateAsync({ userId, suspend });
+      }
+      toast.success(`${selectedUsers.size} users ${suspend ? "suspended" : "unsuspended"}`);
+      clearSelection();
+    } catch (error) {
+      toast.error("Failed to update some users");
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const handleBulkVerify = async (verify: boolean) => {
+    setBulkActionLoading(true);
+    try {
+      for (const userId of selectedUsers) {
+        await verifyUser.mutateAsync({ userId, verify });
+      }
+      toast.success(`${selectedUsers.size} users ${verify ? "verified" : "unverified"}`);
+      clearSelection();
+    } catch (error) {
+      toast.error("Failed to update some users");
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const handleExportUsers = () => {
+    const selectedUserData = users?.filter((u) => selectedUsers.has(u.id)) || [];
+    const csvHeaders = ["ID", "Username", "Email", "Full Name", "Phone", "Role", "Verified", "Suspended", "Created At"];
+    const csvRows = selectedUserData.map((u) => [
+      u.id,
+      u.username,
+      u.email || "",
+      u.full_name || "",
+      u.phone || "",
+      u.role || "",
+      u.is_verified ? "Yes" : "No",
+      u.is_suspended ? "Yes" : "No",
+      format(new Date(u.created_at), "yyyy-MM-dd HH:mm:ss"),
+    ]);
+    
+    const csvContent = [
+      csvHeaders.join(","),
+      ...csvRows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `users-export-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    link.click();
+    
+    toast.success(`Exported ${selectedUsers.size} users to CSV`);
+  };
 
   const filteredProducts = products?.filter((p) =>
     p.name.toLowerCase().includes(productSearch.toLowerCase())
@@ -194,6 +290,78 @@ export default function AdminPanel() {
                 </div>
               </CardHeader>
               <CardContent>
+                {/* Bulk Actions Toolbar */}
+                {selectedUsers.size > 0 && (
+                  <div className="flex items-center gap-4 p-4 mb-4 bg-muted rounded-lg border">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">
+                        {selectedUsers.size} user{selectedUsers.size > 1 ? "s" : ""} selected
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearSelection}
+                        className="h-6 px-2"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="h-4 w-px bg-border" />
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleBulkVerify(true)}
+                        disabled={bulkActionLoading}
+                      >
+                        <UserCheck className="h-4 w-4 mr-1" />
+                        Verify
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleBulkVerify(false)}
+                        disabled={bulkActionLoading}
+                      >
+                        <ShieldOff className="h-4 w-4 mr-1" />
+                        Unverify
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleBulkSuspend(true)}
+                        disabled={bulkActionLoading}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <UserX className="h-4 w-4 mr-1" />
+                        Suspend
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleBulkSuspend(false)}
+                        disabled={bulkActionLoading}
+                      >
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Unsuspend
+                      </Button>
+                      <div className="h-4 w-px bg-border" />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleExportUsers}
+                        disabled={bulkActionLoading}
+                      >
+                        <Download className="h-4 w-4 mr-1" />
+                        Export CSV
+                      </Button>
+                    </div>
+                    {bulkActionLoading && (
+                      <Loader2 className="h-4 w-4 animate-spin ml-auto" />
+                    )}
+                  </div>
+                )}
+
                 {usersLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -202,6 +370,13 @@ export default function AdminPanel() {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-[50px]">
+                          <Checkbox
+                            checked={allFilteredSelected}
+                            onCheckedChange={toggleAllUsers}
+                            aria-label="Select all users"
+                          />
+                        </TableHead>
                         <TableHead>User</TableHead>
                         <TableHead>Role</TableHead>
                         <TableHead>Status</TableHead>
@@ -211,7 +386,17 @@ export default function AdminPanel() {
                     </TableHeader>
                     <TableBody>
                       {filteredUsers?.map((user) => (
-                        <TableRow key={user.id}>
+                        <TableRow 
+                          key={user.id}
+                          className={selectedUsers.has(user.id) ? "bg-muted/50" : ""}
+                        >
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedUsers.has(user.id)}
+                              onCheckedChange={() => toggleUserSelection(user.id)}
+                              aria-label={`Select ${user.username}`}
+                            />
+                          </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-3">
                               <Avatar>
