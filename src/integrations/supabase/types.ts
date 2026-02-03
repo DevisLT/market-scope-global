@@ -58,6 +58,7 @@ export type Database = {
       categories: {
         Row: {
           created_at: string
+          deleted_at: string | null
           description: string | null
           icon: string | null
           id: string
@@ -69,6 +70,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           icon?: string | null
           id?: string
@@ -80,6 +82,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           icon?: string | null
           id?: string
@@ -177,6 +180,7 @@ export type Database = {
           country_code: string | null
           created_at: string
           currency_code: string | null
+          deleted_at: string | null
           id: string
           is_active: boolean
           name: string
@@ -189,6 +193,7 @@ export type Database = {
           country_code?: string | null
           created_at?: string
           currency_code?: string | null
+          deleted_at?: string | null
           id?: string
           is_active?: boolean
           name: string
@@ -201,6 +206,7 @@ export type Database = {
           country_code?: string | null
           created_at?: string
           currency_code?: string | null
+          deleted_at?: string | null
           id?: string
           is_active?: boolean
           name?: string
@@ -223,6 +229,7 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          deleted_at: string | null
           id: string
           is_read: boolean
           receiver_id: string
@@ -231,6 +238,7 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
           is_read?: boolean
           receiver_id: string
@@ -239,6 +247,7 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
           is_read?: boolean
           receiver_id?: string
@@ -319,6 +328,7 @@ export type Database = {
         Row: {
           category_id: string
           created_at: string
+          deleted_at: string | null
           description: string | null
           id: string
           image_url: string | null
@@ -332,6 +342,7 @@ export type Database = {
         Insert: {
           category_id: string
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
@@ -345,6 +356,7 @@ export type Database = {
         Update: {
           category_id?: string
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
@@ -376,6 +388,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          deleted_at: string | null
           email: string | null
           full_name: string | null
           id: string
@@ -389,6 +402,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          deleted_at?: string | null
           email?: string | null
           full_name?: string | null
           id: string
@@ -402,6 +416,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          deleted_at?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
@@ -540,6 +555,14 @@ export type Database = {
       owns_product: {
         Args: { _product_id: string; _user_id: string }
         Returns: boolean
+      }
+      restore_record: {
+        Args: { record_id: string; table_name: string }
+        Returns: undefined
+      }
+      soft_delete_record: {
+        Args: { record_id: string; table_name: string }
+        Returns: undefined
       }
     }
     Enums: {

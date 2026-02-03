@@ -9,20 +9,33 @@ export type AuditActionType =
   | "user_unverified"
   | "user_role_changed"
   | "user_password_reset"
+  | "user_deleted"
+  | "user_restored"
+  | "user_permanently_deleted"
+  | "role_changed"
   | "product_approved"
   | "product_rejected"
   | "product_deleted"
+  | "product_restored"
+  | "product_permanently_deleted"
   | "price_verified"
   | "price_deleted"
   | "category_created"
   | "category_updated"
   | "category_deleted"
+  | "category_restored"
+  | "category_permanently_deleted"
   | "location_created"
   | "location_updated"
   | "location_deleted"
+  | "location_restored"
+  | "location_permanently_deleted"
+  | "message_deleted"
+  | "message_restored"
+  | "message_permanently_deleted"
   | "settings_changed";
 
-export type AuditTargetType = "user" | "product" | "price" | "settings" | "category" | "location";
+export type AuditTargetType = "user" | "product" | "price" | "settings" | "category" | "location" | "message";
 
 export interface AuditLogEntry {
   id: string;
