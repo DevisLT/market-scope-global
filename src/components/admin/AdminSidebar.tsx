@@ -17,6 +17,7 @@ import {
   History,
   FolderTree,
   Trash2,
+  Factory,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -59,6 +60,11 @@ const navItems = [
     label: "Deleted Items",
     href: "/admin/deleted",
     icon: Trash2,
+  },
+  {
+    label: "Industry Categories",
+    href: "/admin/industry-categories",
+    icon: Factory,
   },
   {
     label: "Audit Log",

@@ -12,6 +12,7 @@ import {
   useMarkAsRead,
 } from "@/hooks/useMessages";
 import { useAuth } from "@/hooks/useAuth";
+import { NewConversationDialog } from "@/components/messages/NewConversationDialog";
 import {
   Search,
   Send,
@@ -29,7 +30,7 @@ export default function Messages() {
   const [search, setSearch] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { data: conversations, isLoading: conversationsLoading } = useConversations();
+  const { data: conversations, isLoading: conversationsLoading, refetch: refetchConversations } = useConversations();
   const { data: messages, isLoading: messagesLoading } = useMessages(selectedPartner || "");
   const sendMessage = useSendMessage();
   const markAsRead = useMarkAsRead();
@@ -85,8 +86,16 @@ export default function Messages() {
               selectedPartner && "hidden md:flex"
             )}
           >
-            <div className="p-4 border-b">
-              <h2 className="font-semibold mb-3">Messages</h2>
+            <div className="p-4 border-b space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="font-semibold">Messages</h2>
+                <NewConversationDialog 
+                  onSelectUser={(userId) => {
+                    setSelectedPartner(userId);
+                    refetchConversations();
+                  }} 
+                />
+              </div>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input

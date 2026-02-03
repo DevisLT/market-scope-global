@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Layout } from "@/components/layout/Layout";
 import { useAuth } from "@/hooks/useAuth";
+import { usePendingApprovals } from "@/hooks/useProductApprovals";
 import {
   BarChart3,
   TrendingUp,
@@ -12,15 +13,9 @@ import {
   Plus,
   Globe,
   Factory,
-  Package,
+  CheckCircle,
+  Clock,
 } from "lucide-react";
-
-const stats = [
-  { label: "Active Demands", value: "5", icon: FileText, change: "2 responses" },
-  { label: "Markets Tracked", value: "24", icon: Globe, change: "Across 8 countries" },
-  { label: "Suppliers Connected", value: "18", icon: Factory, change: "+3 this month" },
-  { label: "Products Analyzed", value: "156", icon: Package, change: "Last 30 days" },
-];
 
 const demandListings = [
   {
@@ -54,6 +49,16 @@ const demandListings = [
 
 export default function IndustryDashboard() {
   const { profile } = useAuth();
+  const { data: pendingApprovals } = usePendingApprovals();
+
+  const pendingCount = pendingApprovals?.length || 0;
+
+  const stats = [
+    { label: "Pending Approvals", value: pendingCount.toString(), icon: Clock, change: "Products awaiting review", highlight: pendingCount > 0 },
+    { label: "Active Demands", value: "5", icon: FileText, change: "2 responses", highlight: false },
+    { label: "Suppliers Connected", value: "18", icon: Factory, change: "+3 this month", highlight: false },
+    { label: "Markets Tracked", value: "24", icon: Globe, change: "Across 8 countries", highlight: false },
+  ];
 
   return (
     <Layout showFooter={false}>
@@ -68,26 +73,36 @@ export default function IndustryDashboard() {
               Access market intelligence and manage bulk demands.
             </p>
           </div>
-          <Button asChild>
-            <Link to="/dashboard/industry/demands/new">
-              <Plus className="mr-2 h-4 w-4" />
-              Post New Demand
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            {pendingCount > 0 && (
+              <Button variant="outline" asChild>
+                <Link to="/dashboard/industry/approvals">
+                  <Clock className="mr-2 h-4 w-4" />
+                  Review Products ({pendingCount})
+                </Link>
+              </Button>
+            )}
+            <Button asChild>
+              <Link to="/dashboard/industry/demands/new">
+                <Plus className="mr-2 h-4 w-4" />
+                Post New Demand
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stats.map((stat) => (
-            <Card key={stat.label}>
+            <Card key={stat.label} className={stat.highlight ? "border-primary" : ""}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {stat.label}
                 </CardTitle>
-                <stat.icon className="h-4 w-4 text-muted-foreground" />
+                <stat.icon className={`h-4 w-4 ${stat.highlight ? "text-primary" : "text-muted-foreground"}`} />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
+                <div className={`text-2xl font-bold ${stat.highlight ? "text-primary" : ""}`}>{stat.value}</div>
                 <p className="text-xs text-muted-foreground">{stat.change}</p>
               </CardContent>
             </Card>
@@ -144,6 +159,14 @@ export default function IndustryDashboard() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
+                {pendingCount > 0 && (
+                  <Button className="w-full justify-start" asChild>
+                    <Link to="/dashboard/industry/approvals">
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Approve Products ({pendingCount})
+                    </Link>
+                  </Button>
+                )}
                 <Button variant="outline" className="w-full justify-start" asChild>
                   <Link to="/dashboard/industry/demands/new">
                     <Plus className="mr-2 h-4 w-4" />
@@ -163,7 +186,7 @@ export default function IndustryDashboard() {
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link to="/dashboard/messages">
+                  <Link to="/messages">
                     <MessageSquare className="mr-2 h-4 w-4" />
                     Messages
                   </Link>
@@ -181,19 +204,19 @@ export default function IndustryDashboard() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Food & Agriculture</span>
-                    <Badge variant="outline" className="text-green-600">
+                    <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400">
                       +2.5%
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Building Materials</span>
-                    <Badge variant="outline" className="text-red-600">
+                    <Badge variant="outline" className="text-destructive">
                       -1.2%
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Fuel & Energy</span>
-                    <Badge variant="outline" className="text-green-600">
+                    <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400">
                       +0.8%
                     </Badge>
                   </div>
