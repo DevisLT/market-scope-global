@@ -12,6 +12,7 @@ export type AuditActionType =
   | "user_deleted"
   | "user_restored"
   | "user_permanently_deleted"
+  | "profile_updated"
   | "role_changed"
   | "product_approved"
   | "product_rejected"
