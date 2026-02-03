@@ -5,8 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageUpload } from "@/components/ui/image-upload";
 import {
   Card,
   CardContent,
@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { useProduct, useCreateProduct, useUpdateProduct } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
 import { ArrowLeft, Loader2 } from "lucide-react";
@@ -228,15 +229,18 @@ export default function ProductForm() {
                   name="image_url"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Image URL</FormLabel>
+                      <FormLabel>Product Image</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="https://example.com/image.jpg"
-                          {...field}
+                        <ImageUpload
+                          value={field.value}
+                          onChange={field.onChange}
+                          bucket="product-images"
+                          folder="products"
+                          disabled={isSaving}
                         />
                       </FormControl>
                       <FormDescription>
-                        Optional. Provide a direct link to your product image.
+                        Optional. Upload an image of your product (max 5MB).
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
