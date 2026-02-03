@@ -38,6 +38,7 @@ import {
   RotateCcw,
   MessageSquare,
   AlertTriangle,
+  UserCog,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -93,6 +94,11 @@ const actionConfig: Record<
   role_changed: {
     label: "Role Changed",
     icon: ShieldCheck,
+    color: "text-[hsl(var(--admin-accent))]",
+  },
+  profile_updated: {
+    label: "Profile Updated",
+    icon: UserCog,
     color: "text-[hsl(var(--admin-accent))]",
   },
   product_approved: {

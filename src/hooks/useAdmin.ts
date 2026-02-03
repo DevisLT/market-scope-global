@@ -221,3 +221,43 @@ export function useVerifyUser() {
     },
   });
 }
+
+export function useUpdateUserProfile() {
+  const queryClient = useQueryClient();
+  const createAuditLog = useCreateAuditLog();
+
+  return useMutation({
+    mutationFn: async ({
+      userId,
+      username,
+      updates,
+    }: {
+      userId: string;
+      username: string;
+      updates: { full_name?: string; email?: string; phone?: string };
+    }) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", userId);
+
+      if (error) throw error;
+      return { userId, username, updates };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      toast.success("Profile updated");
+
+      createAuditLog.mutate({
+        action_type: "profile_updated",
+        target_type: "user",
+        target_id: data.userId,
+        target_name: data.username,
+        details: data.updates,
+      });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to update profile");
+    },
+  });
+}

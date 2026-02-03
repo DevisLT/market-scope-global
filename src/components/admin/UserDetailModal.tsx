@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,7 +24,7 @@ import { format } from "date-fns";
 import { roleLabels, type AppRole } from "@/lib/auth";
 import type { AdminUser } from "@/hooks/useAdmin";
 import { useUpdateUserRole } from "@/hooks/useUserRole";
-import { useSuspendUser, useVerifyUser } from "@/hooks/useAdmin";
+import { useSuspendUser, useVerifyUser, useUpdateUserProfile } from "@/hooks/useAdmin";
 import { useSoftDeleteUser } from "@/hooks/useDeletedItems";
 import {
   User,
@@ -36,6 +37,9 @@ import {
   Trash2,
   Loader2,
   AlertTriangle,
+  Pencil,
+  Save,
+  X,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -59,15 +63,24 @@ const roles: AppRole[] = ["buyer", "seller", "industry", "admin"];
 export function UserDetailModal({ user, open, onOpenChange }: UserDetailModalProps) {
   const [selectedRole, setSelectedRole] = useState<AppRole | undefined>(user?.role);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [fullName, setFullName] = useState(user?.full_name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [phone, setPhone] = useState(user?.phone || "");
 
   const updateRole = useUpdateUserRole();
   const suspendUser = useSuspendUser();
   const verifyUser = useVerifyUser();
   const softDeleteUser = useSoftDeleteUser();
+  const updateProfile = useUpdateUserProfile();
 
   useEffect(() => {
     if (user) {
       setSelectedRole(user.role);
+      setFullName(user.full_name || "");
+      setEmail(user.email || "");
+      setPhone(user.phone || "");
+      setIsEditingProfile(false);
     }
   }, [user]);
 
@@ -112,11 +125,34 @@ export function UserDetailModal({ user, open, onOpenChange }: UserDetailModalPro
     setShowDeleteConfirm(false);
   };
 
+  const handleSaveProfile = () => {
+    updateProfile.mutate(
+      {
+        userId: user.id,
+        username: user.username,
+        updates: {
+          full_name: fullName || null,
+          email: email || null,
+          phone: phone || null,
+        },
+      },
+      { onSuccess: () => setIsEditingProfile(false) }
+    );
+  };
+
+  const handleCancelEdit = () => {
+    setFullName(user.full_name || "");
+    setEmail(user.email || "");
+    setPhone(user.phone || "");
+    setIsEditingProfile(false);
+  };
+
   const isLoading =
     updateRole.isPending ||
     suspendUser.isPending ||
     verifyUser.isPending ||
-    softDeleteUser.isPending;
+    softDeleteUser.isPending ||
+    updateProfile.isPending;
 
   return (
     <>
@@ -154,31 +190,112 @@ export function UserDetailModal({ user, open, onOpenChange }: UserDetailModalPro
           <div className="space-y-6 py-4">
             {/* User Info */}
             <div className="space-y-3">
-              <div className="flex items-center gap-3 text-[hsl(var(--admin-foreground))]">
-                <User className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
-                <span className="font-medium">Full Name:</span>
-                <span className="text-[hsl(var(--admin-foreground-muted))]">
-                  {user.full_name || "Not set"}
-                </span>
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-[hsl(var(--admin-foreground))] flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Profile Information
+                </Label>
+                {!isEditingProfile ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditingProfile(true)}
+                    className="text-[hsl(var(--admin-accent))] hover:text-[hsl(var(--admin-accent))] hover:bg-[hsl(var(--admin-accent))]/10"
+                  >
+                    <Pencil className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCancelEdit}
+                      disabled={updateProfile.isPending}
+                      className="text-[hsl(var(--admin-foreground-muted))]"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleSaveProfile}
+                      disabled={updateProfile.isPending}
+                      className="bg-[hsl(var(--admin-accent))] hover:bg-[hsl(var(--admin-accent))]/90 text-[hsl(var(--admin-accent-foreground))]"
+                    >
+                      {updateProfile.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                      ) : (
+                        <Save className="h-4 w-4 mr-1" />
+                      )}
+                      Save
+                    </Button>
+                  </div>
+                )}
               </div>
-              <div className="flex items-center gap-3 text-[hsl(var(--admin-foreground))]">
-                <Mail className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
-                <span className="font-medium">Email:</span>
-                <span className="text-[hsl(var(--admin-foreground-muted))]">
-                  {user.email || "Not set"}
-                </span>
-              </div>
-              <div className="flex items-center gap-3 text-[hsl(var(--admin-foreground))]">
-                <Phone className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
-                <span className="font-medium">Phone:</span>
-                <span className="text-[hsl(var(--admin-foreground-muted))]">
-                  {user.phone || "Not set"}
-                </span>
-              </div>
-              <div className="flex items-center gap-3 text-[hsl(var(--admin-foreground))]">
+
+              {isEditingProfile ? (
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-[hsl(var(--admin-foreground-muted))] text-xs">Full Name</Label>
+                    <Input
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Enter full name"
+                      className="bg-[hsl(var(--admin-bg-muted))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[hsl(var(--admin-foreground-muted))] text-xs">Email</Label>
+                    <Input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter email"
+                      className="bg-[hsl(var(--admin-bg-muted))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[hsl(var(--admin-foreground-muted))] text-xs">Phone</Label>
+                    <Input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="Enter phone number"
+                      className="bg-[hsl(var(--admin-bg-muted))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 text-[hsl(var(--admin-foreground))]">
+                    <User className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
+                    <span className="font-medium text-sm">Full Name:</span>
+                    <span className="text-[hsl(var(--admin-foreground-muted))] text-sm">
+                      {user.full_name || "Not set"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 text-[hsl(var(--admin-foreground))]">
+                    <Mail className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
+                    <span className="font-medium text-sm">Email:</span>
+                    <span className="text-[hsl(var(--admin-foreground-muted))] text-sm">
+                      {user.email || "Not set"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 text-[hsl(var(--admin-foreground))]">
+                    <Phone className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
+                    <span className="font-medium text-sm">Phone:</span>
+                    <span className="text-[hsl(var(--admin-foreground-muted))] text-sm">
+                      {user.phone || "Not set"}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 text-[hsl(var(--admin-foreground))] pt-2">
                 <Calendar className="h-4 w-4 text-[hsl(var(--admin-foreground-muted))]" />
-                <span className="font-medium">Joined:</span>
-                <span className="text-[hsl(var(--admin-foreground-muted))]">
+                <span className="font-medium text-sm">Joined:</span>
+                <span className="text-[hsl(var(--admin-foreground-muted))] text-sm">
                   {format(new Date(user.created_at), "PPP")}
                 </span>
               </div>
