@@ -35,6 +35,9 @@ import {
   FolderMinus,
   MapPin,
   KeyRound,
+  RotateCcw,
+  MessageSquare,
+  AlertTriangle,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -72,6 +75,26 @@ const actionConfig: Record<
     icon: KeyRound,
     color: "text-[hsl(var(--admin-warning))]",
   },
+  user_deleted: {
+    label: "User Deleted",
+    icon: Trash2,
+    color: "text-[hsl(var(--admin-danger))]",
+  },
+  user_restored: {
+    label: "User Restored",
+    icon: RotateCcw,
+    color: "text-[hsl(var(--admin-success))]",
+  },
+  user_permanently_deleted: {
+    label: "User Permanently Deleted",
+    icon: AlertTriangle,
+    color: "text-[hsl(var(--admin-danger))]",
+  },
+  role_changed: {
+    label: "Role Changed",
+    icon: ShieldCheck,
+    color: "text-[hsl(var(--admin-accent))]",
+  },
   product_approved: {
     label: "Product Approved",
     icon: CheckCircle,
@@ -85,6 +108,16 @@ const actionConfig: Record<
   product_deleted: {
     label: "Product Deleted",
     icon: Trash2,
+    color: "text-[hsl(var(--admin-danger))]",
+  },
+  product_restored: {
+    label: "Product Restored",
+    icon: RotateCcw,
+    color: "text-[hsl(var(--admin-success))]",
+  },
+  product_permanently_deleted: {
+    label: "Product Permanently Deleted",
+    icon: AlertTriangle,
     color: "text-[hsl(var(--admin-danger))]",
   },
   price_verified: {
@@ -112,6 +145,16 @@ const actionConfig: Record<
     icon: FolderMinus,
     color: "text-[hsl(var(--admin-danger))]",
   },
+  category_restored: {
+    label: "Category Restored",
+    icon: RotateCcw,
+    color: "text-[hsl(var(--admin-success))]",
+  },
+  category_permanently_deleted: {
+    label: "Category Permanently Deleted",
+    icon: AlertTriangle,
+    color: "text-[hsl(var(--admin-danger))]",
+  },
   location_created: {
     label: "Location Created",
     icon: MapPin,
@@ -125,6 +168,31 @@ const actionConfig: Record<
   location_deleted: {
     label: "Location Deleted",
     icon: MapPin,
+    color: "text-[hsl(var(--admin-danger))]",
+  },
+  location_restored: {
+    label: "Location Restored",
+    icon: RotateCcw,
+    color: "text-[hsl(var(--admin-success))]",
+  },
+  location_permanently_deleted: {
+    label: "Location Permanently Deleted",
+    icon: AlertTriangle,
+    color: "text-[hsl(var(--admin-danger))]",
+  },
+  message_deleted: {
+    label: "Message Deleted",
+    icon: MessageSquare,
+    color: "text-[hsl(var(--admin-danger))]",
+  },
+  message_restored: {
+    label: "Message Restored",
+    icon: RotateCcw,
+    color: "text-[hsl(var(--admin-success))]",
+  },
+  message_permanently_deleted: {
+    label: "Message Permanently Deleted",
+    icon: AlertTriangle,
     color: "text-[hsl(var(--admin-danger))]",
   },
   settings_changed: {
@@ -141,6 +209,7 @@ const targetTypeLabels: Record<AuditTargetType, string> = {
   settings: "Settings",
   category: "Category",
   location: "Location",
+  message: "Message",
 };
 
 export default function AuditLog() {

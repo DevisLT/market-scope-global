@@ -36,6 +36,8 @@ import {
   useSuspendUser,
   useVerifyUser,
 } from "@/hooks/useAdmin";
+import { useSoftDeleteProduct } from "@/hooks/useDeletedItems";
+import { UserDetailModal } from "@/components/admin/UserDetailModal";
 import {
   Users,
   Package,
@@ -55,6 +57,7 @@ import {
   UserCheck,
   UserX,
   X,
+  Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { roleLabels } from "@/lib/auth";
@@ -67,6 +70,8 @@ export default function AdminPanel() {
   const [productSearch, setProductSearch] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [userModalOpen, setUserModalOpen] = useState(false);
 
   const { data: stats, isLoading: statsLoading } = useAdminStats();
   const { data: users, isLoading: usersLoading } = useAdminUsers();
@@ -76,6 +81,7 @@ export default function AdminPanel() {
   const rejectProduct = useRejectProduct();
   const suspendUser = useSuspendUser();
   const verifyUser = useVerifyUser();
+  const softDeleteProduct = useSoftDeleteProduct();
 
   const filteredUsers = users?.filter(
     (u) =>
@@ -457,6 +463,16 @@ export default function AdminPanel() {
                                 className="bg-[hsl(var(--admin-bg-elevated))] border-[hsl(var(--admin-border))] text-[hsl(var(--admin-foreground))]"
                               >
                                 <DropdownMenuItem
+                                  onClick={() => {
+                                    setSelectedUser(user);
+                                    setUserModalOpen(true);
+                                  }}
+                                  className="focus:bg-[hsl(var(--admin-bg-muted))]"
+                                >
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
                                   onClick={() =>
                                     verifyUser.mutate({
                                       userId: user.id,
@@ -611,10 +627,17 @@ export default function AdminPanel() {
                                 )}
                                 <DropdownMenuItem
                                   onClick={() => rejectProduct.mutate({ productId: product.id, productName: product.name })}
-                                  className="text-[hsl(var(--admin-danger))] focus:bg-[hsl(var(--admin-bg-muted))]"
+                                  className="focus:bg-[hsl(var(--admin-bg-muted))]"
                                 >
                                   <XCircle className="mr-2 h-4 w-4" />
                                   Reject
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => softDeleteProduct.mutate({ productId: product.id, productName: product.name })}
+                                  className="text-[hsl(var(--admin-danger))] focus:bg-[hsl(var(--admin-bg-muted))]"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Delete
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -698,6 +721,13 @@ export default function AdminPanel() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* User Detail Modal */}
+      <UserDetailModal
+        user={selectedUser}
+        open={userModalOpen}
+        onOpenChange={setUserModalOpen}
+      />
     </AdminLayout>
   );
 }

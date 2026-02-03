@@ -45,12 +45,11 @@ import {
   useAdminCategories,
   useCreateCategory,
   useUpdateCategory,
-  useDeleteCategory,
   useAdminLocations,
   useCreateLocation,
   useUpdateLocation,
-  useDeleteLocation,
 } from "@/hooks/useDataManagement";
+import { useSoftDeleteCategory, useSoftDeleteLocation } from "@/hooks/useDeletedItems";
 import type { Category } from "@/hooks/useCategories";
 import type { Location, LocationType } from "@/hooks/useLocations";
 import {
@@ -89,10 +88,10 @@ export default function DataManagement() {
   // Mutations
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
-  const deleteCategory = useDeleteCategory();
+  const softDeleteCategory = useSoftDeleteCategory();
   const createLocation = useCreateLocation();
   const updateLocation = useUpdateLocation();
-  const deleteLocation = useDeleteLocation();
+  const softDeleteLocation = useSoftDeleteLocation();
 
   // Filter data
   const filteredCategories = categories?.filter((c) =>
@@ -142,8 +141,8 @@ export default function DataManagement() {
 
   const handleConfirmDeleteCategory = () => {
     if (deletingCategory) {
-      deleteCategory.mutate(
-        { id: deletingCategory.id, name: deletingCategory.name },
+      softDeleteCategory.mutate(
+        { categoryId: deletingCategory.id, categoryName: deletingCategory.name },
         { onSuccess: () => setDeletingCategory(null) }
       );
     }
@@ -187,8 +186,8 @@ export default function DataManagement() {
 
   const handleConfirmDeleteLocation = () => {
     if (deletingLocation) {
-      deleteLocation.mutate(
-        { id: deletingLocation.id, name: deletingLocation.name },
+      softDeleteLocation.mutate(
+        { locationId: deletingLocation.id, locationName: deletingLocation.name },
         { onSuccess: () => setDeletingLocation(null) }
       );
     }
