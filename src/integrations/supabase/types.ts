@@ -175,6 +175,42 @@ export type Database = {
           },
         ]
       }
+      industry_categories: {
+        Row: {
+          category_id: string
+          created_at: string
+          id: string
+          industry_user_id: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          id?: string
+          industry_user_id: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          id?: string
+          industry_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "industry_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "industry_categories_industry_user_id_fkey"
+            columns: ["industry_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       locations: {
         Row: {
           country_code: string | null
@@ -270,6 +306,50 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          reference_id: string | null
+          reference_type: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          reference_id?: string | null
+          reference_type?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prices: {
         Row: {
           created_at: string
@@ -326,6 +406,8 @@ export type Database = {
       }
       products: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           category_id: string
           created_at: string
           deleted_at: string | null
@@ -335,11 +417,14 @@ export type Database = {
           is_active: boolean
           is_approved: boolean
           name: string
+          rejection_reason: string | null
           seller_id: string
           unit: string
           updated_at: string
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           category_id: string
           created_at?: string
           deleted_at?: string | null
@@ -349,11 +434,14 @@ export type Database = {
           is_active?: boolean
           is_approved?: boolean
           name: string
+          rejection_reason?: string | null
           seller_id: string
           unit?: string
           updated_at?: string
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           category_id?: string
           created_at?: string
           deleted_at?: string | null
@@ -363,11 +451,19 @@ export type Database = {
           is_active?: boolean
           is_approved?: boolean
           name?: string
+          rejection_reason?: string | null
           seller_id?: string
           unit?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "products_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "products_category_id_fkey"
             columns: ["category_id"]
@@ -537,6 +633,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_approve_product: {
+        Args: { _product_id: string; _user_id: string }
+        Returns: boolean
+      }
       generate_username: {
         Args: { _role: Database["public"]["Enums"]["app_role"] }
         Returns: string

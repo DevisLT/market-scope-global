@@ -44,6 +44,9 @@ import MarketComparison from "./pages/prices/MarketComparison";
 // Messages
 import Messages from "./pages/messages/Messages";
 
+// Industry
+import ProductApprovals from "./pages/industry/ProductApprovals";
+
 // Admin
 import AdminPanel from "./pages/admin/AdminPanel";
 import SystemOverview from "./pages/admin/SystemOverview";
@@ -51,6 +54,7 @@ import UserCredentials from "./pages/admin/UserCredentials";
 import AuditLog from "./pages/admin/AuditLog";
 import DataManagement from "./pages/admin/DataManagement";
 import DeletedItems from "./pages/admin/DeletedItems";
+import IndustryCategoryAssignment from "./pages/admin/IndustryCategoryAssignment";
 import Settings from "./pages/settings/Settings";
 
 const queryClient = new QueryClient();
@@ -149,6 +153,14 @@ const App = () => (
               }
             />
             <Route
+              path="/dashboard/industry/approvals"
+              element={
+                <ProtectedRoute allowedRoles={["industry", "admin"]}>
+                  <ProductApprovals />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/dashboard/admin"
               element={
                 <ProtectedRoute allowedRoles={["admin"]}>
@@ -201,6 +213,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={["admin"]}>
                   <DeletedItems />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/industry-categories"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <IndustryCategoryAssignment />
                 </ProtectedRoute>
               }
             />
