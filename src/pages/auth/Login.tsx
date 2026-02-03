@@ -40,7 +40,13 @@ export default function Login() {
       toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (error: any) {
-      toast.error(error.message || "Failed to sign in");
+      if (error.message?.includes("Email not confirmed")) {
+        toast.error("Please check your email and confirm your account before signing in. Check your spam folder too!", {
+          duration: 6000,
+        });
+      } else {
+        toast.error(error.message || "Failed to sign in");
+      }
     } finally {
       setIsLoading(false);
     }
