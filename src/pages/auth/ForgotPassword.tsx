@@ -82,13 +82,21 @@ export default function ForgotPassword() {
                     {form.getValues("email")}
                   </span>
                 </p>
+                <div className="bg-muted/50 rounded-lg p-4 text-left space-y-2">
+                  <p className="text-sm font-medium">Didn't receive the email?</p>
+                  <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
+                    <li>Check your <strong>spam/junk folder</strong></li>
+                    <li>Make sure you entered the correct email</li>
+                    <li>Wait a few minutes for delivery</li>
+                  </ul>
+                </div>
                 <p className="text-sm text-muted-foreground">
-                  Didn't receive the email? Check your spam folder or{" "}
+                  Still nothing?{" "}
                   <button
                     onClick={() => setIsEmailSent(false)}
-                    className="text-primary hover:underline"
+                    className="text-primary hover:underline font-medium"
                   >
-                    try again
+                    Try again
                   </button>
                 </p>
                 <Button variant="outline" className="w-full" asChild>
