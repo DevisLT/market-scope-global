@@ -66,6 +66,11 @@ const navItems = [
     href: "/admin/industry-categories",
     icon: Factory,
   },
+   {
+     label: "Price Trends",
+     href: "/admin/price-trends",
+     icon: TrendingUp,
+   },
   {
     label: "Audit Log",
     href: "/admin/audit-log",
@@ -80,11 +85,6 @@ const navItems = [
     label: "Subscriptions",
     href: "/admin/subscriptions",
     icon: CreditCard,
-  },
-  {
-    label: "Analytics",
-    href: "/admin/analytics",
-    icon: TrendingUp,
   },
   {
     label: "Database",
