@@ -1,4 +1,4 @@
-import { useState } from "react";
+ import { useState, useMemo } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -25,26 +25,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePrices } from "@/hooks/usePrices";
+ import { usePrices, usePriceHistory } from "@/hooks/usePrices";
+ import { usePriceTrends } from "@/hooks/usePriceTrends";
 import { useCategories } from "@/hooks/useCategories";
 import { useLocations } from "@/hooks/useLocations";
 import {
   Search,
   Filter,
-  TrendingUp,
-  TrendingDown,
-  Minus,
+   TrendingUp as TrendingUpIcon,
+   TrendingDown as TrendingDownIcon,
+   Minus as MinusIcon,
   Loader2,
   MapPin,
 } from "lucide-react";
 import { format } from "date-fns";
 
-export default function PriceList() {
+ import { PriceTrendBadge } from "@/components/prices/PriceTrendBadge";
+ 
+ export default function PriceList() {
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState<string>("");
 
   const { data: prices, isLoading } = usePrices({ limit: 100 });
   const { data: locations } = useLocations();
+ const { data: priceTrends } = usePriceTrends();
+ 
+ // Create a map for quick trend lookup
+ const trendMap = useMemo(() => {
+   const map = new Map<string, { currentPrice: number; previousPrice: number }>();
+   priceTrends?.forEach((trend) => {
+     const key = `${trend.productId}-${trend.locationId}`;
+     map.set(key, {
+       currentPrice: trend.currentPrice,
+       previousPrice: trend.previousPrice,
+     });
+   });
+   return map;
+ }, [priceTrends]);
 
   const filteredPrices = prices?.filter((p) => {
     const matchesSearch = p.product?.name
@@ -123,7 +140,7 @@ export default function PriceList() {
         ) : filteredPrices?.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+               <TrendingUpIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium">No prices found</h3>
               <p className="text-muted-foreground">
                 Try adjusting your search or filters
@@ -168,9 +185,25 @@ export default function PriceList() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <span className="font-mono font-bold text-lg">
-                          {price.currency} {price.price.toFixed(2)}
-                        </span>
+                         <div className="flex items-center gap-2">
+                           <span className="font-mono font-bold text-lg">
+                             {price.currency} {price.price.toFixed(2)}
+                           </span>
+                           {(() => {
+                             const key = `${price.product_id}-${price.location_id}`;
+                             const trend = trendMap.get(key);
+                             if (trend && trend.previousPrice !== trend.currentPrice) {
+                               return (
+                                 <PriceTrendBadge
+                                   currentPrice={trend.currentPrice}
+                                   previousPrice={trend.previousPrice}
+                                   size="sm"
+                                 />
+                               );
+                             }
+                             return null;
+                           })()}
+                         </div>
                       </TableCell>
                       <TableCell>
                         <span className="text-sm">

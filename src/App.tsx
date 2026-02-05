@@ -55,6 +55,7 @@ import AuditLog from "./pages/admin/AuditLog";
 import DataManagement from "./pages/admin/DataManagement";
 import DeletedItems from "./pages/admin/DeletedItems";
 import IndustryCategoryAssignment from "./pages/admin/IndustryCategoryAssignment";
+ import AdminPriceTrends from "./pages/admin/PriceTrends";
 import Settings from "./pages/settings/Settings";
 
 const queryClient = new QueryClient();
@@ -224,6 +225,14 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+             <Route
+               path="/admin/price-trends"
+               element={
+                 <ProtectedRoute allowedRoles={["admin"]}>
+                   <AdminPriceTrends />
+                 </ProtectedRoute>
+               }
+             />
             <Route
               path="/settings"
               element={
