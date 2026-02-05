@@ -12,11 +12,12 @@ import { Separator } from "@/components/ui/separator";
 import { signUp, generateStrongPassword, roleLabels, roleDescriptions, AppRole } from "@/lib/auth";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import { TrendingUp, Loader2, Mail, User, Copy, Check, ShoppingCart, Users, Factory } from "lucide-react";
+import { TrendingUp, Loader2, Mail, User, Copy, Check, ShoppingCart, Users, Factory, Phone } from "lucide-react";
 
 const registerSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email"),
+  phone: z.string().regex(/^[0-9]{9}$/, "Please enter a valid 9-digit phone number"),
   role: z.enum(["seller", "buyer", "industry"] as const),
 });
 
@@ -40,6 +41,7 @@ export default function Register() {
     defaultValues: {
       fullName: "",
       email: "",
+      phone: "",
       role: "buyer",
     },
   });
@@ -48,7 +50,8 @@ export default function Register() {
     setIsLoading(true);
     try {
       const password = generateStrongPassword();
-      await signUp(data.email, password, data.role as AppRole, data.fullName);
+      const fullPhone = `+250${data.phone}`;
+      await signUp(data.email, password, data.role as AppRole, data.fullName, fullPhone);
       setGeneratedPassword(password);
       toast.success("Account created successfully!");
     } catch (error: any) {
@@ -246,6 +249,35 @@ export default function Register() {
                     </FormItem>
                   )}
                 />
+
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <div className="relative flex">
+                        <div className="flex items-center gap-1 px-3 bg-muted border border-r-0 rounded-l-md text-sm text-muted-foreground">
+                          <Phone className="h-4 w-4" />
+                          <span>+250</span>
+                        </div>
+                        <Input
+                          placeholder="788123456"
+                          className="rounded-l-none"
+                          maxLength={9}
+                          {...field}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '');
+                            field.onChange(value);
+                          }}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
                 <FormField
                   control={form.control}

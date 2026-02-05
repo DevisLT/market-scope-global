@@ -28,7 +28,8 @@ export async function signUp(
   email: string,
   password: string,
   role: AppRole,
-  fullName?: string
+  fullName?: string,
+  phone?: string
 ) {
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -37,6 +38,7 @@ export async function signUp(
       data: {
         role,
         full_name: fullName || "",
+        phone: phone || "",
       },
     },
   });
