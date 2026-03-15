@@ -105,6 +105,18 @@ export default function Register() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+              <Mail className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm text-blue-800 font-medium mb-1">
+                  Check your email to verify your account
+                </p>
+                <p className="text-xs text-blue-700">
+                  A verification link has been sent to your email address. You must verify your email before you can log in.
+                </p>
+              </div>
+            </div>
+
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
               <p className="text-sm text-amber-800 font-medium mb-2">
                 ⚠️ Important: Save this password now!
