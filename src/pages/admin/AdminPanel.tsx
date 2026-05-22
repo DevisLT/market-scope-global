@@ -36,8 +36,18 @@ import {
   useSuspendUser,
   useVerifyUser,
 } from "@/hooks/useAdmin";
-import { useSoftDeleteProduct } from "@/hooks/useDeletedItems";
+import { useSoftDeleteProduct, useSoftDeleteUser } from "@/hooks/useDeletedItems";
 import { UserDetailModal } from "@/components/admin/UserDetailModal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Users,
   Package,
