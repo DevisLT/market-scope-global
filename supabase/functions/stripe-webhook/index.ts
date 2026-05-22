@@ -31,20 +31,23 @@ serve(async (req) => {
 
     let event: Stripe.Event;
 
-    if (webhookSecret && signature) {
-      try {
-        event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-      } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : "Unknown error";
-        console.error("Webhook signature verification failed:", errorMessage);
-        return new Response(JSON.stringify({ error: "Invalid signature" }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-    } else {
-      // For testing without signature verification
-      event = JSON.parse(body);
+    if (!webhookSecret || !signature) {
+      console.error("Webhook rejected: missing signature or webhook secret");
+      return new Response(
+        JSON.stringify({ error: "Webhook signature verification required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      console.error("Webhook signature verification failed:", errorMessage);
+      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     console.log("Received Stripe event:", event.type);
