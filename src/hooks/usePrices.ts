@@ -1,6 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { z } from "zod";
+
+const priceInputSchema = z.object({
+  product_id: z.string().uuid("Invalid product"),
+  location_id: z.string().uuid("Invalid location"),
+  price: z
+    .number({ invalid_type_error: "Price must be a number" })
+    .positive("Price must be greater than zero")
+    .max(9_999_999_999.99, "Price is too large"),
+  currency: z.string().trim().length(3, "Currency must be a 3-letter code").optional(),
+  source: z.string().trim().max(200, "Source is too long").optional(),
+  notes: z.string().trim().max(500, "Notes are too long").optional(),
+});
+
+const priceUpdateSchema = priceInputSchema.partial().extend({
+  is_verified: z.boolean().optional(),
+});
 
 export interface Price {
   id: string;
@@ -103,10 +120,14 @@ export function useCreatePrice() {
 
   return useMutation({
     mutationFn: async (input: CreatePriceInput) => {
+      const parsed = priceInputSchema.safeParse(input);
+      if (!parsed.success) {
+        throw new Error(parsed.error.issues[0]?.message ?? "Invalid price data");
+      }
       const { data, error } = await supabase
         .from("prices")
         .insert({
-          ...input,
+          ...parsed.data,
           recorded_at: new Date().toISOString(),
         })
         .select()
@@ -131,9 +152,13 @@ export function useUpdatePrice() {
 
   return useMutation({
     mutationFn: async ({ id, ...input }: UpdatePriceInput & { id: string }) => {
+      const parsed = priceUpdateSchema.safeParse(input);
+      if (!parsed.success) {
+        throw new Error(parsed.error.issues[0]?.message ?? "Invalid price data");
+      }
       const { data, error } = await supabase
         .from("prices")
-        .update(input)
+        .update(parsed.data)
         .eq("id", id)
         .select()
         .single();
