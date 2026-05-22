@@ -20,6 +20,7 @@ import BuyerDashboard from "./pages/dashboard/BuyerDashboard";
 import IndustryDashboard from "./pages/dashboard/IndustryDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import Pricing from "./pages/Pricing";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 
 // Info Pages
@@ -87,6 +88,7 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/cookies" element={<Cookies />} />
+            <Route path="/onboarding" element={<Onboarding />} />
 
             {/* Protected Routes */}
             <Route

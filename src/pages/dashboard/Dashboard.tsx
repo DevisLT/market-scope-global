@@ -17,6 +17,13 @@ export default function Dashboard() {
     return <Navigate to="/login" replace />;
   }
 
+  // First-time users see the futuristic onboarding tutorial
+  const seenOnboarding =
+    typeof window !== "undefined" && localStorage.getItem("priceflow_onboarding_seen") === "1";
+  if (!seenOnboarding) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
   // Redirect to role-specific dashboard
   switch (role) {
     case "seller":
