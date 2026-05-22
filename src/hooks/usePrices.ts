@@ -127,7 +127,12 @@ export function useCreatePrice() {
       const { data, error } = await supabase
         .from("prices")
         .insert({
-          ...parsed.data,
+          product_id: parsed.data.product_id,
+          location_id: parsed.data.location_id,
+          price: parsed.data.price,
+          currency: parsed.data.currency,
+          source: parsed.data.source,
+          notes: parsed.data.notes,
           recorded_at: new Date().toISOString(),
         })
         .select()
