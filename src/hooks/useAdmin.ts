@@ -32,6 +32,7 @@ export function useAdminUsers() {
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select("*")
+        .is("deleted_at", null)
         .order("created_at", { ascending: false });
 
       if (profilesError) throw profilesError;
