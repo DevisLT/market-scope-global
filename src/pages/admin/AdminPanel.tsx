@@ -92,6 +92,8 @@ export default function AdminPanel() {
   const suspendUser = useSuspendUser();
   const verifyUser = useVerifyUser();
   const softDeleteProduct = useSoftDeleteProduct();
+  const softDeleteUser = useSoftDeleteUser();
+  const [userToDelete, setUserToDelete] = useState<{ id: string; username: string } | null>(null);
 
   const filteredUsers = users?.filter(
     (u) =>
@@ -525,6 +527,15 @@ export default function AdminPanel() {
                                       Suspend User
                                     </>
                                   )}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    setUserToDelete({ id: user.id, username: user.username })
+                                  }
+                                  className="focus:bg-[hsl(var(--admin-bg-muted))] text-[hsl(var(--admin-danger))]"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Delete User
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
