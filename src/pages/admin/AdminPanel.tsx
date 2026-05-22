@@ -749,6 +749,33 @@ export default function AdminPanel() {
         open={userModalOpen}
         onOpenChange={setUserModalOpen}
       />
+
+      <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete user?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will move <strong>{userToDelete?.username}</strong> to the trash. You can restore them later from the Deleted Items section.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (userToDelete) {
+                  softDeleteUser.mutate(
+                    { userId: userToDelete.id, username: userToDelete.username },
+                    { onSettled: () => setUserToDelete(null) }
+                  );
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminLayout>
   );
 }
