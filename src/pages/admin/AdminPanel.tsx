@@ -36,8 +36,18 @@ import {
   useSuspendUser,
   useVerifyUser,
 } from "@/hooks/useAdmin";
-import { useSoftDeleteProduct } from "@/hooks/useDeletedItems";
+import { useSoftDeleteProduct, useSoftDeleteUser } from "@/hooks/useDeletedItems";
 import { UserDetailModal } from "@/components/admin/UserDetailModal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Users,
   Package,
@@ -82,6 +92,8 @@ export default function AdminPanel() {
   const suspendUser = useSuspendUser();
   const verifyUser = useVerifyUser();
   const softDeleteProduct = useSoftDeleteProduct();
+  const softDeleteUser = useSoftDeleteUser();
+  const [userToDelete, setUserToDelete] = useState<{ id: string; username: string } | null>(null);
 
   const filteredUsers = users?.filter(
     (u) =>
@@ -516,6 +528,15 @@ export default function AdminPanel() {
                                     </>
                                   )}
                                 </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    setUserToDelete({ id: user.id, username: user.username })
+                                  }
+                                  className="focus:bg-[hsl(var(--admin-bg-muted))] text-[hsl(var(--admin-danger))]"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Delete User
+                                </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>
@@ -728,6 +749,33 @@ export default function AdminPanel() {
         open={userModalOpen}
         onOpenChange={setUserModalOpen}
       />
+
+      <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete user?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will move <strong>{userToDelete?.username}</strong> to the trash. You can restore them later from the Deleted Items section.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (userToDelete) {
+                  softDeleteUser.mutate(
+                    { userId: userToDelete.id, username: userToDelete.username },
+                    { onSettled: () => setUserToDelete(null) }
+                  );
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminLayout>
   );
 }

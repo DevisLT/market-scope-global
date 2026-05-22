@@ -14,8 +14,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { signOut, roleLabels } from "@/lib/auth";
 import { toast } from "sonner";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import priceflowLogo from "@/assets/priceflow-logo.png";
 import {
-  TrendingUp,
   Menu,
   User,
   LogOut,
@@ -58,13 +58,12 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-primary-foreground">
-              <TrendingUp className="w-6 h-6" />
-            </div>
-            <span className="font-bold text-xl hidden sm:block">
-              Price<span className="text-primary">flow</span>
-            </span>
+          <Link to="/" className="flex items-center gap-2" aria-label="PriceFlow home">
+            <img
+              src={priceflowLogo}
+              alt="PriceFlow — Market Pricing Intelligence Ecosystem"
+              className="h-10 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}
