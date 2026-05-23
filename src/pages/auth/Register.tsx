@@ -12,7 +12,8 @@ import { Separator } from "@/components/ui/separator";
 import { signUp, generateStrongPassword, roleLabels, roleDescriptions, AppRole } from "@/lib/auth";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import { TrendingUp, Loader2, Mail, User, Copy, Check, ShoppingCart, Users, Factory, Phone } from "lucide-react";
+import { Loader2, Mail, User, Copy, Check, ShoppingCart, Users, Factory, Phone } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 const registerSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -160,15 +161,9 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
-        <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground">
-            <TrendingUp className="w-7 h-7" />
-          </div>
-          <span className="font-bold text-2xl">
-            Price<span className="text-primary">flow</span>
-          </span>
-        </Link>
+        <div className="flex items-center justify-center mb-8">
+          <Logo size="lg" />
+        </div>
 
         <Card>
           <CardHeader className="text-center">

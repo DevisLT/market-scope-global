@@ -11,7 +11,8 @@ import { Separator } from "@/components/ui/separator";
 import { signIn } from "@/lib/auth";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import { TrendingUp, Loader2, Mail } from "lucide-react";
+import { Loader2, Mail } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -71,15 +72,9 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
-        <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground">
-            <TrendingUp className="w-7 h-7" />
-          </div>
-          <span className="font-bold text-2xl">
-            Price<span className="text-primary">flow</span>
-          </span>
-        </Link>
+        <div className="flex items-center justify-center mb-8">
+          <Logo size="lg" />
+        </div>
 
         <Card>
           <CardHeader className="text-center">
