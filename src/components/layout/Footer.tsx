@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { TrendingUp, Twitter, Linkedin, Github } from "lucide-react";
+import { Twitter, Linkedin, Github } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export function Footer() {
   return (
@@ -8,14 +9,9 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-primary-foreground">
-                <TrendingUp className="w-6 h-6" />
-              </div>
-              <span className="font-bold text-xl">
-                Price<span className="text-primary">flow</span>
-              </span>
-            </Link>
+            <div className="mb-4">
+              <Logo size="md" />
+            </div>
             <p className="text-sm text-muted-foreground mb-4">
               Real-time market price intelligence for informed decisions.
             </p>

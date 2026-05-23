@@ -9,7 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { TrendingUp, Loader2, Lock, CheckCircle } from "lucide-react";
+import { Loader2, Lock, CheckCircle } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 const resetPasswordSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
@@ -37,30 +38,50 @@ export default function ResetPassword() {
   });
 
   useEffect(() => {
-    // Check if we have a valid recovery session
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      // The user should have a session from clicking the reset link
-      if (session) {
-        setIsValidSession(true);
-      } else {
-        // Try to exchange the hash fragment for a session
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token');
-        
-        if (accessToken && refreshToken) {
-          const { error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          });
-          
-          if (!error) {
-            setIsValidSession(true);
-          }
+      // 1) PKCE flow: ?code=... in query string — exchange it for a session
+      const url = new URL(window.location.href);
+      const code = url.searchParams.get("code");
+      const errorDesc = url.searchParams.get("error_description");
+
+      if (errorDesc) {
+        toast.error(decodeURIComponent(errorDesc));
+        setIsChecking(false);
+        return;
+      }
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (!error) {
+          setIsValidSession(true);
+          // Clean the URL so refresh doesn't re-exchange
+          window.history.replaceState({}, "", "/reset-password");
+          setIsChecking(false);
+          return;
+        }
+        toast.error(error.message || "Reset link is invalid or expired");
+      }
+
+      // 2) Legacy hash flow: #access_token=...&refresh_token=...
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (!error) {
+          setIsValidSession(true);
+          window.history.replaceState({}, "", "/reset-password");
+          setIsChecking(false);
+          return;
         }
       }
+
+      // 3) Already authenticated (e.g. opened in same tab)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) setIsValidSession(true);
       setIsChecking(false);
     };
 
@@ -104,15 +125,9 @@ export default function ResetPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
-        <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground">
-            <TrendingUp className="w-7 h-7" />
-          </div>
-          <span className="font-bold text-2xl">
-            Price<span className="text-primary">flow</span>
-          </span>
-        </Link>
+        <div className="flex items-center justify-center mb-8">
+          <Logo size="lg" />
+        </div>
 
         <Card>
           <CardHeader className="text-center">
