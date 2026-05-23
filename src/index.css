@@ -164,12 +164,46 @@
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
   }
-  
+
+  .text-gradient-neon {
+    background: linear-gradient(120deg, hsl(190 95% 60%), hsl(160 84% 55%), hsl(221 83% 65%));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
   .glass {
     @apply bg-white/80 backdrop-blur-xl border border-white/20;
   }
-  
+
   .dark .glass {
-    @apply bg-card/80 backdrop-blur-xl border border-white/10;
+    background: linear-gradient(135deg, hsl(222 47% 11% / 0.7), hsl(222 47% 8% / 0.55));
+    @apply backdrop-blur-2xl border border-white/10;
+    box-shadow: 0 10px 40px -10px hsl(190 95% 50% / 0.15), inset 0 1px 0 hsl(0 0% 100% / 0.06);
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 0 1px hsl(190 95% 60% / 0.25), 0 0 40px -8px hsl(190 95% 60% / 0.55);
+  }
+
+  .glow-emerald {
+    box-shadow: 0 0 0 1px hsl(160 84% 45% / 0.25), 0 0 40px -8px hsl(160 84% 45% / 0.5);
+  }
+
+  .bg-grid-fade {
+    background-image:
+      linear-gradient(hsl(var(--foreground) / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--foreground) / 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at top, black 40%, transparent 75%);
+  }
+
+  .bg-cinematic {
+    background:
+      radial-gradient(1200px 600px at 10% -10%, hsl(190 95% 50% / 0.18), transparent 60%),
+      radial-gradient(900px 500px at 90% 0%, hsl(160 84% 45% / 0.14), transparent 60%),
+      radial-gradient(700px 400px at 50% 100%, hsl(221 83% 60% / 0.18), transparent 60%),
+      hsl(222 47% 6%);
   }
 }
+
