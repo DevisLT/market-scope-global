@@ -84,27 +84,69 @@
     --shadow-card: 0 1px 0 hsl(0 0% 100% / 0.04) inset, 0 24px 60px -24px hsl(222 80% 2% / 0.7);
   }
 
-  /* Light mode retained but darkened to match the cinematic system */
+  /* ============ LIGHT THEME ============
+     Premium, airy, high-contrast. WCAG AA-friendly. */
   .light {
-    --background: 210 30% 97%;
+    --background: 210 40% 98%;
     --foreground: 222 60% 8%;
+
     --card: 0 0% 100%;
     --card-foreground: 222 60% 8%;
+
     --popover: 0 0% 100%;
     --popover-foreground: 222 60% 8%;
-    --primary: 190 95% 40%;
+
+    --primary: 190 95% 36%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 174 80% 35%;
+    --primary-glow: 190 95% 50%;
+
+    --secondary: 174 80% 32%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 210 20% 92%;
-    --muted-foreground: 215 16% 40%;
-    --accent: 160 84% 38%;
+
+    --accent: 160 84% 32%;
     --accent-foreground: 0 0% 100%;
-    --border: 215 20% 88%;
-    --input: 215 20% 88%;
-    --ring: 190 95% 40%;
-    --sidebar-background: 222 60% 6%;
-    --sidebar-foreground: 200 25% 92%;
+
+    --muted: 210 25% 94%;
+    --muted-foreground: 215 16% 38%;
+
+    --success: 160 84% 32%;
+    --success-foreground: 0 0% 100%;
+    --warning: 32 95% 44%;
+    --warning-foreground: 0 0% 100%;
+    --destructive: 0 78% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --info: 190 95% 36%;
+    --info-foreground: 0 0% 100%;
+
+    --trend-rising: 160 84% 32%;
+    --trend-falling: 0 78% 52%;
+    --trend-stable: 215 16% 45%;
+
+    --border: 215 22% 88%;
+    --input: 215 22% 90%;
+    --ring: 190 95% 36%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 14%;
+    --sidebar-primary: 190 95% 36%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 30% 94%;
+    --sidebar-accent-foreground: 190 95% 30%;
+    --sidebar-border: 215 22% 90%;
+    --sidebar-ring: 190 95% 36%;
+
+    --chart-1: 190 95% 36%;
+    --chart-2: 160 84% 32%;
+    --chart-3: 174 80% 32%;
+    --chart-4: 32 95% 44%;
+    --chart-5: 262 75% 50%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(190 95% 40%), hsl(160 84% 38%));
+    --gradient-cinematic: linear-gradient(135deg, hsl(210 40% 99%) 0%, hsl(210 35% 96%) 60%, hsl(190 50% 94%) 100%);
+    --gradient-aurora: linear-gradient(120deg, hsl(190 95% 50% / 0.18), hsl(160 84% 45% / 0.14), hsl(262 75% 55% / 0.12));
+    --shadow-elegant: 0 20px 60px -20px hsl(190 95% 40% / 0.25);
+    --shadow-glow: 0 0 60px hsl(190 95% 50% / 0.3);
+    --shadow-card: 0 1px 0 hsl(0 0% 100%) inset, 0 12px 32px -16px hsl(215 30% 30% / 0.18);
   }
 
   /* Admin theme — distinct command-center identity */
@@ -131,11 +173,23 @@
 
 @layer base {
   * { @apply border-border; }
-  html { color-scheme: dark; }
+  html {
+    color-scheme: dark;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+  html.light { color-scheme: light; }
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: 'ss01', 'cv11';
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+  /* Smooth token-driven color transitions across all surfaces */
+  body, .glass, .glass-strong, .glass-subtle,
+  [class*="bg-card"], [class*="bg-popover"], [class*="bg-muted"],
+  [class*="bg-background"], [class*="border-"], [class*="text-"] {
+    transition: background-color 0.35s ease, border-color 0.35s ease, color 0.25s ease;
+  }
     background-image:
       radial-gradient(1200px 700px at 12% -10%, hsl(190 95% 50% / 0.10), transparent 60%),
       radial-gradient(900px 600px at 92% 4%, hsl(160 84% 45% / 0.08), transparent 60%),
