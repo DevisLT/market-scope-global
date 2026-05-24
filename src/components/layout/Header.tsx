@@ -11,6 +11,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import { signOut, roleLabels } from "@/lib/auth";
 import { toast } from "sonner";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
@@ -29,7 +30,7 @@ import {
 export function Header() {
   const { user, profile, role, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [isDark, setIsDark] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -42,10 +43,6 @@ export function Header() {
     }
   };
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle("dark");
-  };
 
   const navLinks = [
     { href: "/prices", label: "Prices" },
@@ -85,12 +82,13 @@ export function Header() {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="hidden sm:flex"
+              aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+              className="hidden sm:flex transition-transform hover:scale-110"
             >
-              {isDark ? (
-                <Sun className="h-5 w-5" />
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5 animate-scale-in" />
               ) : (
-                <Moon className="h-5 w-5" />
+                <Moon className="h-5 w-5 animate-scale-in" />
               )}
             </Button>
 
