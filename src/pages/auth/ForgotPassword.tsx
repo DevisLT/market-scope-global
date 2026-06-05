@@ -48,16 +48,17 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-mesh p-4 relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-fade pointer-events-none" aria-hidden />
+      <div className="w-full max-w-md relative animate-fade-in">
         {/* Logo */}
-        <div className="flex items-center justify-center mb-8">
+        <div className="flex items-center justify-center mb-8 animate-scale-in">
           <Logo size="lg" />
         </div>
 
-        <Card>
+        <Card className="glass-strong border-glow shadow-[var(--shadow-card)] animate-slide-up">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">
+            <CardTitle className="text-2xl text-gradient-neon">
               {isEmailSent ? "Check Your Email" : "Forgot Password"}
             </CardTitle>
             <CardDescription>
@@ -69,8 +70,8 @@ export default function ForgotPassword() {
           <CardContent className="space-y-4">
             {isEmailSent ? (
               <div className="text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center mx-auto">
-                  <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+                <div className="w-16 h-16 rounded-full bg-accent/15 flex items-center justify-center mx-auto glow-emerald">
+                  <CheckCircle className="w-8 h-8 text-accent" />
                 </div>
                 <p className="text-sm text-muted-foreground">
                   We've sent a password reset link to{" "}

@@ -116,29 +116,30 @@ export default function ResetPassword() {
 
   if (isChecking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-mesh">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
-        <div className="flex items-center justify-center mb-8">
+    <div className="min-h-screen flex items-center justify-center bg-mesh p-4 relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-fade pointer-events-none" aria-hidden />
+      <div className="w-full max-w-md relative animate-fade-in">
+        <div className="flex items-center justify-center mb-8 animate-scale-in">
           <Logo size="lg" />
         </div>
 
-        <Card>
+        <Card className="glass-strong border-glow shadow-[var(--shadow-card)] animate-slide-up">
           <CardHeader className="text-center">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${isSuccess ? "bg-accent/15 glow-emerald" : "bg-primary/10 glow-cyan"}`}>
               {isSuccess ? (
-                <CheckCircle className="w-8 h-8 text-green-600" />
+                <CheckCircle className="w-8 h-8 text-accent" />
               ) : (
                 <Lock className="w-8 h-8 text-primary" />
               )}
             </div>
-            <CardTitle className="text-2xl">
+            <CardTitle className="text-2xl text-gradient-neon">
               {isSuccess ? "Password Reset Complete" : "Set New Password"}
             </CardTitle>
             <CardDescription>
