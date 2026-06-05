@@ -74,13 +74,14 @@ export default function ChangePassword() {
 
   return (
     <Layout showFooter={false}>
-      <div className="min-h-[80vh] flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+      <div className="min-h-[80vh] flex items-center justify-center p-4 bg-mesh relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-fade pointer-events-none" aria-hidden />
+        <Card className="w-full max-w-md glass-strong border-glow shadow-[var(--shadow-card)] animate-slide-up relative">
           <CardHeader className="text-center">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 glow-cyan">
               <Lock className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="text-2xl">Change Your Password</CardTitle>
+            <CardTitle className="text-2xl text-gradient-neon">Change Your Password</CardTitle>
             <CardDescription>
               For security, you must set a new password before continuing.
             </CardDescription>

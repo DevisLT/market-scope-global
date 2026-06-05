@@ -94,13 +94,14 @@ export default function Register() {
   // Show password modal if registration successful
   if (generatedPassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-mesh p-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-fade pointer-events-none" aria-hidden />
+        <Card className="w-full max-w-md glass-strong border-glow animate-scale-in relative">
           <CardHeader className="text-center">
-            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-              <Check className="w-8 h-8 text-green-600" />
+            <div className="w-16 h-16 rounded-full bg-accent/15 flex items-center justify-center mx-auto mb-4 glow-emerald">
+              <Check className="w-8 h-8 text-accent" />
             </div>
-            <CardTitle className="text-2xl">Account Created!</CardTitle>
+            <CardTitle className="text-2xl text-gradient-neon">Account Created!</CardTitle>
             <CardDescription>
               Your account has been created successfully. Please save your password below.
             </CardDescription>
@@ -159,15 +160,16 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
-        <div className="flex items-center justify-center mb-8">
+    <div className="min-h-screen flex items-center justify-center bg-mesh p-4 relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-fade pointer-events-none" aria-hidden />
+      <div className="w-full max-w-md relative animate-fade-in">
+        <div className="flex items-center justify-center mb-8 animate-scale-in">
           <Logo size="lg" />
         </div>
 
-        <Card>
+        <Card className="glass-strong border-glow shadow-[var(--shadow-card)] animate-slide-up">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Create Your Account</CardTitle>
+            <CardTitle className="text-2xl text-gradient-neon">Create Your Account</CardTitle>
             <CardDescription>
               Join thousands of users tracking market prices worldwide
             </CardDescription>
