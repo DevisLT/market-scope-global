@@ -87,14 +87,14 @@
   /* ============ LIGHT THEME ============
      Premium, airy, high-contrast. WCAG AA-friendly. */
   .light {
-    --background: 210 40% 98%;
-    --foreground: 222 60% 8%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 60% 8%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 60% 8%;
+    --popover-foreground: 0 0% 0%;
 
     --primary: 190 95% 36%;
     --primary-foreground: 0 0% 100%;
