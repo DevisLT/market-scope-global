@@ -13,6 +13,7 @@ const sizeMap = {
   md: "h-10",
   lg: "h-12",
   xl: "h-16",
+  "2xl": "h-24",
 };
 
 export function Logo({ className, size = "md", linkTo = "/" }: LogoProps) {
