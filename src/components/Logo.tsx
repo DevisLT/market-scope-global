@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
   linkTo?: string | null;
 }
 
