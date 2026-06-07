@@ -53,7 +53,9 @@ export default function ForgotPassword() {
       <div className="w-full max-w-md relative animate-fade-in">
         {/* Logo */}
         <div className="flex items-center justify-center mb-8 animate-scale-in">
-          <Logo size="lg" />
+          <div className="rounded-2xl bg-white/10 backdrop-blur-md p-4 border border-white/20 shadow-[0_0_40px_rgba(255,255,255,0.15)]">
+            <Logo size="2xl" />
+          </div>
         </div>
 
         <Card className="glass-strong border-glow shadow-[var(--shadow-card)] animate-slide-up">
